@@ -1,12 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { SteamService } from './steam.service';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { HttpService } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+
+import { SteamService } from './steam.service';
 
 const mockHttpService = () => ({});
 
 const mockConfigService = () => ({
-  get: jest.fn(),
+  get: jest.fn()
 });
 
 describe('SteamService', () => {
@@ -18,8 +20,8 @@ describe('SteamService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [SteamService,
         { provide: HttpService, useFactory: mockHttpService },
-        { provide: ConfigService, useFactory: mockConfigService },
-      ],
+        { provide: ConfigService, useFactory: mockConfigService }
+      ]
     }).compile();
 
     service = module.get<SteamService>(SteamService);

@@ -11,9 +11,9 @@ import { MatchService } from './match.service';
         TypeOrmModule.forFeature([MatchRepository]),
         QueueModule,
         PlayerModule,
-        HttpModule,
+        HttpModule
     ],
     providers: [MatchService],
-    exports: [MatchService],
+    exports: [MatchService]
 })
 export class MatchModule { }

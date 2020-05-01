@@ -1,7 +1,7 @@
 /**
  * Player who played a Match
  */
-export interface PlayerInMatch {
+export interface IPlayerInMatch {
     /**
      * Steam identifier
      */

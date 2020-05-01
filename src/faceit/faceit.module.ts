@@ -1,17 +1,17 @@
-import { Module, HttpModule } from '@nestjs/common';
-import { FaceitService } from './faceit.service';
+import { HttpModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserRepository } from '../user/user.repository';
+
 import { MatchModule } from '../match/match.module';
-import { QueueModule } from '../queue/queue.module';
+import { UserRepository } from '../user/user.repository';
+import { FaceitService } from './faceit.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserRepository]),
     HttpModule,
-    MatchModule,
+    MatchModule
   ],
   providers: [FaceitService],
-  exports: [FaceitService],
+  exports: [FaceitService]
 })
 export class FaceitModule { }

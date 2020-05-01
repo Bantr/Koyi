@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { IBanType } from '@bantr/lib/dist/types';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -6,7 +7,7 @@ import * as faker from 'faker';
 
 import Ban from '../ban/ban.entity';
 import Player from '../player/player.entity';
-import { EconomyBan, GetPlayerBansResponse } from '../steam/steam.service';
+import { EconomyBan, IGetPlayerBansResponse } from '../steam/steam.service';
 import UserSettings from '../user-settings/user-settings.entity';
 import User from '../user/user.entity';
 import { NotificationRepository } from './notification.repository';
@@ -14,15 +15,15 @@ import { NotificationService } from './notification.service';
 
 jest.setTimeout(10000);
 
-function mockBanStatus(options: GetPlayerBansResponse = {
+function mockBanStatus(options: IGetPlayerBansResponse = {
     CommunityBanned: faker.random.boolean(),
     DaysSinceLastBan: faker.random.number({ min: 0, max: 9999 }),
     NumberOfGameBans: faker.random.number({ min: 0, max: 10 }),
     NumberOfVACBans: faker.random.number({ min: 0, max: 10 }),
     VACBanned: true,
     SteamId: '76561198028175942',
-    EconomyBan: EconomyBan.Banned,
-}): GetPlayerBansResponse {
+    EconomyBan: EconomyBan.Banned
+}): IGetPlayerBansResponse {
 
     if (options.NumberOfVACBans > 0) {
         options.VACBanned = true;
@@ -34,7 +35,7 @@ function mockBanStatus(options: GetPlayerBansResponse = {
 }
 
 const mockConfigService = () => ({
-    get: jest.fn(() => process.env.DISCORD_BOT_TOKEN),
+    get: jest.fn(() => process.env.DISCORD_BOT_TOKEN)
 });
 
 function mockUser(): User {
@@ -74,7 +75,7 @@ function mockPlayer() {
 }
 
 const mockNotificationRepository = () => ({
-    createNotification: jest.fn(),
+    createNotification: jest.fn()
 });
 
 /**
@@ -90,8 +91,8 @@ describe('NotificationService', () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [NotificationService,
                 { provide: ConfigService, useFactory: mockConfigService },
-                { provide: NotificationRepository, useFactory: mockNotificationRepository },
-            ],
+                { provide: NotificationRepository, useFactory: mockNotificationRepository }
+            ]
             //       imports: [ConfigModule]
         }).compile();
 
@@ -128,6 +129,7 @@ describe('NotificationService', () => {
 
     describe('sendNotification', () => {
         it('should apply filtering based on user settings', async () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const filterSpy = jest.spyOn(NotificationService.prototype as any, 'filterDataBasedOnSettings');
             const player = mockPlayer();
             const user = mockUser();

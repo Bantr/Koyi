@@ -12,7 +12,7 @@ export class PlayerRepository extends Repository<Player> {
      * Returns an array of Players sorted by lastCheckedAt
      * @param limit
      */
-    async findPlayerByLastCheckedAt(limit: number = 100): Promise<Player[]> {
+    async findPlayerByLastCheckedAt(limit = 100): Promise<Player[]> {
 
         if (limit > 500) {
             throw new Error('Max limit of Players requested');
@@ -20,9 +20,9 @@ export class PlayerRepository extends Repository<Player> {
 
         const response = await this.find({
             order: {
-                lastCheckedAt: 'ASC',
+                lastCheckedAt: 'ASC'
             },
-            take: limit,
+            take: limit
         });
 
         return response;

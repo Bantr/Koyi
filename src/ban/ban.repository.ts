@@ -31,7 +31,7 @@ export class BanRepository extends Repository<Ban> {
      * Delete a ban from the database
      * @param ban
      */
-    async deleteBan(ban: Ban) {
+    async deleteBan(ban: Ban): Promise<Ban> {
         ban.unbanned = true;
         ban.unbannedAt = new Date();
         return await ban.save();
@@ -44,8 +44,8 @@ export class BanRepository extends Repository<Ban> {
     public async findBansForPlayer(player: Player): Promise<Ban[]> {
         const bans = await this.find({
             where: {
-                player,
-            },
+                player
+            }
         });
         return bans;
     }

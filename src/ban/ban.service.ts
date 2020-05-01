@@ -8,7 +8,7 @@ import Player from 'src/player/player.entity';
 import { NotificationService } from '../notification/notification.service';
 import { PlayerService } from '../player/player.service';
 import { QueueService } from '../queue/queue.service';
-import { EconomyBan, GetPlayerBansResponse, SteamService } from '../steam/steam.service';
+import { EconomyBan, IGetPlayerBansResponse, SteamService } from '../steam/steam.service';
 import Ban from './ban.entity';
 import { BanRepository } from './ban.repository';
 
@@ -40,7 +40,7 @@ export class BanService {
     private queueService: QueueService,
     private playerService: PlayerService,
     private steamService: SteamService,
-    private notificationService: NotificationService,
+    private notificationService: NotificationService
   ) {
     this.bansQueue = queueService.getQueue('bans');
   }
@@ -87,7 +87,7 @@ export class BanService {
    * @param player
    * @param banStatus
    */
-  private async getBanChanges(player: Player, banStatus: GetPlayerBansResponse) {
+  private async getBanChanges(player: Player, banStatus: IGetPlayerBansResponse) {
     const existingBans = await this.banRepository.findBansForPlayer(player);
     const hasBan = banStatus.CommunityBanned || banStatus.VACBanned || (banStatus.EconomyBan !== EconomyBan.Banned);
     const existingCommunityBan = existingBans.filter(b => b.type === IBanType.Community).length > 0 ? true : false;
@@ -121,18 +121,18 @@ export class BanService {
       existingBans,
       types: {
         steamGameBan: {
-          gameBansDelta,
+          gameBansDelta
         },
         steamVacBan: {
-          vacBansDelta,
+          vacBansDelta
         },
         steamCommunityBan: {
-          communityBansDelta,
+          communityBansDelta
         },
         steamEconomyBan: {
-          economyBanDelta,
-        },
-      },
+          economyBanDelta
+        }
+      }
     };
   }
 
@@ -141,7 +141,7 @@ export class BanService {
    * @param player
    * @param banStatus
    */
-  async processProfile(player: Player, banStatus: GetPlayerBansResponse) {
+  async processProfile(player: Player, banStatus: IGetPlayerBansResponse) {
     // Did this ban exist before the account was added to the system?
     const preExisting = player.lastCheckedAt.valueOf() < new Date(10000).valueOf();
     const newBans: Ban[] = [];
@@ -151,7 +151,7 @@ export class BanService {
     const commonOptions = {
       detectedAt: new Date(),
       player,
-      preExisting,
+      preExisting
     };
 
     // TODO: refactor this copy pasted mess :)
@@ -206,7 +206,7 @@ export class BanService {
     return {
       hasBan,
       newBans,
-      player: updatedPlayer,
+      player: updatedPlayer
     };
   }
 }

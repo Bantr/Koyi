@@ -1,4 +1,4 @@
-import { Injectable, Logger, HttpService } from '@nestjs/common';
+import { HttpService, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 /**
@@ -21,7 +21,7 @@ export class SteamService {
      */
     constructor(
         private readonly httpService: HttpService,
-        private readonly configService: ConfigService,
+        private readonly configService: ConfigService
     ) {
         this.steamApiKey = configService.get('BANTR_STEAM_API');
     }
@@ -35,10 +35,10 @@ export class SteamService {
         const response = await this.httpService.get(`https://api.steampowered.com/ISteamUser/GetPlayerBans/v1/`, {
             params: {
                 key: this.steamApiKey,
-                steamids: steamIds.join(','),
-            },
+                steamids: steamIds.join(',')
+            }
         }).toPromise();
-        const data: GetPlayerBansResponse[] = response.data.players;
+        const data: IGetPlayerBansResponse[] = response.data.players;
         return data;
     }
 
@@ -51,8 +51,8 @@ export class SteamService {
         const response = await this.httpService.get(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/`, {
             params: {
                 key: this.steamApiKey,
-                steamids: steamIds.join(','),
-            },
+                steamids: steamIds.join(',')
+            }
         }).toPromise();
         return response.data.response.players;
     }
@@ -62,7 +62,7 @@ export class SteamService {
 /**
  * Response from Steam API ISteamUser/GetPlayerBans/v1/
  */
-export interface GetPlayerBansResponse {
+export interface IGetPlayerBansResponse {
     /**
      * SteamID64
      */

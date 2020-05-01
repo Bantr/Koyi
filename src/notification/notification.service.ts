@@ -20,7 +20,7 @@ export class NotificationService {
 
     constructor(
         private configService: ConfigService,
-        private notificationRepository: NotificationRepository,
+        private notificationRepository: NotificationRepository
     ) {
         const token = configService.get('BANTR_DISCORD_BOT_TOKEN');
 
@@ -151,6 +151,7 @@ export class NotificationService {
 
         for (const banType in addedDeltas) {
             if (addedDeltas[banType].length) {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 for (const [i, ban] of addedDeltas[banType].entries()) {
                     embed.description += `🚫 Banned: ${banType.toLowerCase()}\n`;
                 }
@@ -158,6 +159,7 @@ export class NotificationService {
         }
         for (const banType in deletedDeltas) {
             if (deletedDeltas[banType].length) {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 for (const [i, ban] of deletedDeltas[banType].entries()) {
                     embed.description += `☑️ Unbanned: ${banType.toLowerCase()}\n`;
                 }
@@ -173,7 +175,7 @@ export class NotificationService {
             [IBanType[1]]: this.filterOnBanType(IBanType.VAC, bans),
             [IBanType[2]]: this.filterOnBanType(IBanType.Economy, bans),
             [IBanType[3]]: this.filterOnBanType(IBanType.Faceit, bans),
-            [IBanType[4]]: this.filterOnBanType(IBanType.Community, bans),
+            [IBanType[4]]: this.filterOnBanType(IBanType.Community, bans)
         };
 
     }

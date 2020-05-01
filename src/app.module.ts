@@ -28,7 +28,7 @@ dotenv.config();
       password: process.env.BANTR_PG_PW,
       database: process.env.BANTR_PG_DB,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: false,
+      synchronize: false
     }),
     BanModule,
     PlayerModule,
@@ -58,11 +58,11 @@ dotenv.config();
         BANTR_DISCORD_BOT_TOKEN: Joi.string(),
         BANTR_GLOBAL_NOTIFICATION_DISCORD: Joi.string().default(''),
         BANTR_DEMO_DOWNLOAD_LOCATION: Joi.string().default('tmp/'),
-        BANTR_SENTRY_DSN: Joi.string().default(''),
-      }),
-    }),
+        BANTR_SENTRY_DSN: Joi.string().default('')
+      })
+    })
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService]
 })
 export class AppModule { }
