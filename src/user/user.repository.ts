@@ -26,9 +26,9 @@ export class UserRepository extends Repository<User> {
             {
                 relations: ['tracks'],
                 where: {
-                    id: user.id,
-                },
-            },
+                    id: user.id
+                }
+            }
         );
 
         return response.tracks;

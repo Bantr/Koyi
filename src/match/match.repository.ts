@@ -1,5 +1,5 @@
-import { Repository, EntityRepository } from 'typeorm';
-import { Logger } from '@nestjs/common';
+import { EntityRepository, Repository } from 'typeorm';
+
 import Match from './match.entity';
 
 /**

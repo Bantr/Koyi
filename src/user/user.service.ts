@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { PlayerInMatch } from '../match/interface/player.interface';
+import { IPlayerInMatch } from '../match/interface/player.interface';
 import { PlayerRepository } from '../player/player.repository';
 import User from './user.entity';
 import { UserRepository } from './user.repository';
@@ -19,22 +19,22 @@ export class UserService {
         @InjectRepository(UserRepository)
         private userRepository: UserRepository,
         @InjectRepository(PlayerRepository)
-        private playerRepository: PlayerRepository,
+        private playerRepository: PlayerRepository
     ) { }
 
     /**
      * Find a User based on their Steam or Faceit ID
      * @param player
      */
-    public async findUserBySteamOrFaceItId(player: PlayerInMatch) {
+    public async findUserBySteamOrFaceItId(player: IPlayerInMatch) {
         const response = await this.userRepository.findOne({
             where: [
                 {
-                    steamId: player.steamId,
+                    steamId: player.steamId
                 },
                 {
-                    faceitId: player.faceitId,
-                }],
+                    faceitId: player.faceitId
+                }]
         });
         return response;
     }

@@ -45,7 +45,7 @@ export class MatchService {
     private queueService: QueueService,
     private playerService: PlayerService,
     private readonly config: ConfigService,
-    private connection: Connection,
+    private connection: Connection
   ) {
     this.matchesQueue = queueService.getQueue('matches');
   }
@@ -103,15 +103,15 @@ export class MatchService {
   }
 
   private async downloadDemo(match: CsgoMatchDto): Promise<Buffer> {
-    return new Promise(async (resolve, reject) => {
-      const path = `${this.config.get('BANTR_DEMO_DOWNLOAD_LOCATION')}${match.externalId}.dem`;
+    return new Promise((resolve, reject) => {
 
       this.httpService.get(match.demoUrl, { responseType: 'arraybuffer' }).toPromise().then(async response => {
 
         const doUnzip = promisify(unzip);
 
-        const buffer = await doUnzip(response.data) as Buffer;
-        resolve(buffer);
+        doUnzip(response.data).then(buffer => {
+          resolve(buffer as Buffer);
+        })
       }).catch(e => {
         this.logger.error(e);
         reject(e);
@@ -145,7 +145,7 @@ export class MatchService {
   @OnQueueCompleted()
   onCompleted(job: Job) {
     this.logger.debug(
-      `Completed job ${job.id} of type ${job.name} from queue ${job.queue.name}`,
+      `Completed job ${job.id} of type ${job.name} from queue ${job.queue.name}`
     );
   }
   /**

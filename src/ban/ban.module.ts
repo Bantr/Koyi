@@ -14,9 +14,9 @@ import { BanService } from './ban.service';
         QueueModule,
         PlayerModule,
         SteamModule,
-        NotificationModule,
+        NotificationModule
     ],
-    providers: [BanService],
+    providers: [BanService]
 })
 export class BanModule { }
 

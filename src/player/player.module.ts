@@ -10,6 +10,6 @@ import { PlayerService } from './player.service';
   imports: [TypeOrmModule.forFeature([Player, PlayerRepository]),
     SteamModule],
   providers: [PlayerService],
-  exports: [PlayerService],
+  exports: [PlayerService]
 })
 export class PlayerModule { }

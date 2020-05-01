@@ -7,19 +7,19 @@ import { NotificationService } from '../notification/notification.service';
 import Player from '../player/player.entity';
 import { PlayerService } from '../player/player.service';
 import { QueueService } from '../queue/queue.service';
-import { EconomyBan, GetPlayerBansResponse, SteamService } from '../steam/steam.service';
+import { EconomyBan, IGetPlayerBansResponse, SteamService } from '../steam/steam.service';
 import { BanRepository } from './ban.repository';
 import { BanService } from './ban.service';
 
-export function mockBanStatus(options: GetPlayerBansResponse = {
+export function mockBanStatus(options: IGetPlayerBansResponse = {
   CommunityBanned: faker.random.boolean(),
   DaysSinceLastBan: faker.random.number({ min: 0, max: 9999 }),
   NumberOfGameBans: faker.random.number({ min: 0, max: 10 }),
   NumberOfVACBans: faker.random.number({ min: 0, max: 10 }),
   VACBanned: true,
   SteamId: '76561198028175942',
-  EconomyBan: EconomyBan.Banned,
-}): GetPlayerBansResponse {
+  EconomyBan: EconomyBan.Banned
+}): IGetPlayerBansResponse {
 
   if (options.NumberOfVACBans > 0) {
     options.VACBanned = true;
@@ -33,15 +33,15 @@ export function mockBanStatus(options: GetPlayerBansResponse = {
 const mockBanRepository = () => ({
   findBansForPlayer: jest.fn(),
   createBan: jest.fn(),
-  deleteBan: jest.fn(),
+  deleteBan: jest.fn()
 });
 
 const mockQueueService = () => ({
-  getQueue: jest.fn(),
+  getQueue: jest.fn()
 });
 
 const mockPlayerService = () => ({
-  updateLastCheckedAt: jest.fn(),
+  updateLastCheckedAt: jest.fn()
 });
 
 const mockFaceitService = () => ({});
@@ -49,17 +49,19 @@ const mockFaceitService = () => ({});
 const mockSteamService = () => ({});
 
 const mockNotificationService = () => ({
-  sendNotification: jest.fn(),
+  sendNotification: jest.fn()
 });
 
 describe('BanService', () => {
   let service: BanService;
   let banRepository;
+  /* eslint-disable */
   let queueService;
   let playerService;
   let faceitService;
   let steamService;
   let notificationService;
+  /* eslint-enable */
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -69,8 +71,8 @@ describe('BanService', () => {
         { provide: PlayerService, useFactory: mockPlayerService },
         { provide: FaceitService, useFactory: mockFaceitService },
         { provide: SteamService, useFactory: mockSteamService },
-        { provide: NotificationService, useFactory: mockNotificationService },
-      ],
+        { provide: NotificationService, useFactory: mockNotificationService }
+      ]
     }).compile();
 
     service = await module.get<BanService>(BanService);
@@ -94,7 +96,7 @@ describe('BanService', () => {
         { type: IBanType.Community },
         { type: IBanType.VAC },
         { type: IBanType.Game },
-        { type: IBanType.Economy },
+        { type: IBanType.Economy }
       ]);
       await service.processProfile(player, mockBanStatus({
         NumberOfVACBans: 0,
@@ -103,7 +105,7 @@ describe('BanService', () => {
         DaysSinceLastBan: 4,
         EconomyBan: EconomyBan.NotBanned,
         VACBanned: true,
-        SteamId: 'aaa',
+        SteamId: 'aaa'
       }));
 
       expect(banRepository.deleteBan).toHaveBeenCalledTimes(4);
@@ -120,7 +122,7 @@ describe('BanService', () => {
         DaysSinceLastBan: 4,
         EconomyBan: EconomyBan.NotBanned,
         VACBanned: true,
-        SteamId: 'aaa',
+        SteamId: 'aaa'
       }));
       expect(banRepository.createBan).toHaveBeenCalledTimes(6);
       expect(result.newBans.length).toEqual(6);

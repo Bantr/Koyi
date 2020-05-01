@@ -3,10 +3,10 @@ import { SteamService } from './steam.service';
 
 @Module({
   imports: [
-    HttpModule,
+    HttpModule
   ],
   providers: [SteamService],
-  exports: [SteamService],
+  exports: [SteamService]
 })
 export class SteamModule {
 }

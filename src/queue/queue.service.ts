@@ -1,8 +1,8 @@
-import { InjectQueue, OnGlobalQueueError, OnGlobalQueueFailed, OnGlobalQueueCompleted } from '@nestjs/bull';
+import { InjectQueue } from '@nestjs/bull';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Queue, Job } from 'bull';
-import * as Sentry from '@sentry/node';
+import { Queue } from 'bull';
+
 /**
  * Handles Bull Queues
  */
@@ -28,7 +28,7 @@ export class QueueService {
         private readonly matchesQueue: Queue,
         @InjectQueue('bans')
         private readonly bansQueue: Queue,
-        private readonly configService: ConfigService,
+        private readonly configService: ConfigService
     ) {
         // Add repeated job for getting user matches
         faceitQueue.add({}, { repeat: { cron: configService.get('BANTR_FACEIT_MATCH_CRON') } });

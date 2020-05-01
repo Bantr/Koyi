@@ -5,6 +5,11 @@ import { DemoFile } from 'demofile';
 
 import Detector from './Detector';
 
+function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+}
+
+
 export default class Players extends Detector {
     private logger: Logger;
     /**
@@ -23,9 +28,9 @@ export default class Players extends Detector {
 
     calculate(match: Match): Promise<Match> {
         this.logger = new Logger(`DEMO ${match.externalId}`);
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
 
-            this.demoFile.gameEvents.on('round_start', async (event) => {
+            this.demoFile.gameEvents.on('round_start', async () => {
                 const players = this.demoFile.players;
 
                 for (const demoPlayer of players) {
@@ -69,6 +74,3 @@ export default class Players extends Detector {
     }
 }
 
-function onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
-}

@@ -1,7 +1,6 @@
 import * as demofile from 'demofile';
 import { DemoFile } from 'demofile';
 
-import Detectors from './detectors';
 import { CsgoMatchDto } from '../dto/csgoMatch.dto';
 import Match from '../match.entity';
 import { Logger } from '@nestjs/common';
@@ -33,7 +32,7 @@ export default class Demo {
         return new Promise((resolve, reject) => {
             this.logger.debug(`Starting processing`);
 
-            this.demoFile.gameEvents.on('round_start', async (event) => {
+            this.demoFile.gameEvents.on('round_start', async () => {
                 const players = this.demoFile.players;
 
                 for (const demoPlayer of players) {

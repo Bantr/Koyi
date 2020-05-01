@@ -1,11 +1,12 @@
 import { IMatchType } from '@bantr/lib/dist/types';
-import { OnQueueCompleted, OnQueueError, OnQueueFailed, OnQueueStalled, Process, Processor } from '@nestjs/bull';
-import { HttpService, Injectable, Logger, NotImplementedException } from '@nestjs/common';
+import { OnQueueCompleted, OnQueueError, OnQueueFailed, Process, Processor } from '@nestjs/bull';
+import { HttpService, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as Sentry from '@sentry/node';
 import { Job } from 'bull';
 import { CsgoMatchDto } from 'src/match/dto/csgoMatch.dto';
-import * as Sentry from '@sentry/node';
+
 import { MatchService } from '../match/match.service';
 import { UserRepository } from '../user/user.repository';
 
@@ -35,7 +36,7 @@ export class FaceitService {
         private userRepository: UserRepository,
         private readonly httpService: HttpService,
         private readonly config: ConfigService,
-        private matchService: MatchService,
+        private matchService: MatchService
     ) {
         this.faceitApiKey = config.get('BANTR_FACEIT_API');
     }
@@ -47,7 +48,7 @@ export class FaceitService {
      * @param job
      */
     @Process({ name: '__default__' })
-    async getMatchesForUsers(job: Job): Promise<void> {
+    async getMatchesForUsers(): Promise<void> {
         const users = await this.userRepository.getUsersWithFaceIt();
         this.logger.verbose(`Found ${users.length} Faceit users to check for new matches`);
         for (const user of users) {
@@ -98,7 +99,7 @@ export class FaceitService {
             id: faceitMatch.match_id,
             externalId: faceitMatch.match_id,
             type: matchType,
-            demoUrl: faceitMatch.demoUrl,
+            demoUrl: faceitMatch.demoUrl
         };
 
         return data;
@@ -113,27 +114,21 @@ export class FaceitService {
     }
 
     /**
-     * Get a Player profile from the Faceit API
-     * @param id
-     */
-    public async getPlayerProfile(id: string) {
-        throw new NotImplementedException();
-    }
-
-    /**
      * Get authorization headers
      */
     private getHeaders() {
         return { Authorization: `Bearer ${this.faceitApiKey}` };
     }
 
+    // TODO: Create a proper interface for this API response
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private async doRequest(endpoint: string): Promise<any> {
         try {
             const response = await this.httpService.get(`https://open.faceit.com/data/v4${endpoint}`, {
                 headers: this.getHeaders(),
                 params: {
-                    limit: 100,
-                },
+                    limit: 100
+                }
             }).toPromise();
             return response;
         } catch (error) {
@@ -159,7 +154,7 @@ export class FaceitService {
     @OnQueueCompleted()
     onCompleted(job: Job) {
         this.logger.debug(
-            `Completed job ${job.id} of type ${job.name} from queue ${job.queue.name}`,
+            `Completed job ${job.id} of type ${job.name} from queue ${job.queue.name}`
         );
     }
 

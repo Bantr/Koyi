@@ -5,16 +5,16 @@ import { BullModule } from '@nestjs/bull';
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: 'faceit',
+      name: 'faceit'
     }),
     BullModule.registerQueue({
-      name: 'matches',
+      name: 'matches'
     }),
     BullModule.registerQueue({
-      name: 'bans',
-    }),
+      name: 'bans'
+    })
   ],
   providers: [QueueService],
-  exports: [QueueService],
+  exports: [QueueService]
 })
 export class QueueModule { }

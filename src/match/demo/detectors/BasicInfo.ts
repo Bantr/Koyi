@@ -1,7 +1,7 @@
+import { Match } from '@bantr/lib/dist/entities';
 import { DemoFile } from 'demofile';
 
 import Detector from './Detector';
-import { Match } from '@bantr/lib/dist/entities';
 
 export default class BasicInfo extends Detector {
     /**
@@ -16,7 +16,7 @@ export default class BasicInfo extends Detector {
     }
 
     calculate(match: Match): Promise<Match> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             this.demoFile.on('start', () => {
                 // console.log('Demo header:', this.demoFile.header);
                 // console.log('Tick rate:', this.demoFile.tickRate);
