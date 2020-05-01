@@ -27,6 +27,13 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
-      - run: npm run test:cov
+      - run: npm test
         env:
           CI: true
+      - name: Test & publish code coverage
+        uses: paambaati/codeclimate-action@v2.6.0
+        env:
+          CC_TEST_REPORTER_ID: 563aebb42b3b2aa2d48cb522008b8c7222674a572abd8120fd799d35ef8d8620
+        with:
+          coverageCommand: npm run test:cov
+          debug: true
