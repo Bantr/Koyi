@@ -120,7 +120,9 @@ export class FaceitService {
         return { Authorization: `Bearer ${this.faceitApiKey}` };
     }
 
-    private async doRequest(endpoint: string): Promise<unknown> {
+    // TODO: Create a proper interface for this API response
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private async doRequest(endpoint: string): Promise<any> {
         try {
             const response = await this.httpService.get(`https://open.faceit.com/data/v4${endpoint}`, {
                 headers: this.getHeaders(),
