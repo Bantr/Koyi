@@ -149,6 +149,7 @@ export class NotificationService {
 
         embed.setDescription(`🔗 [Profile](https://bantr.app/profile?steamId=${player.steamId})\n\n`);
 
+        // TODO: refactor this 
         for (const banType in addedDeltas) {
             if (addedDeltas[banType].length) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
