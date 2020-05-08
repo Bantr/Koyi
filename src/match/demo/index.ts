@@ -5,16 +5,15 @@ import { CsgoMatchDto } from '../dto/csgoMatch.dto';
 import Match from '../match.entity';
 import { Logger } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { Player } from '@bantr/lib/dist/entities/player.entity';
+
+import * as Sentry from '@sentry/node'
+import Detectors from './detectors' 
 
 export default class Demo {
     private readonly demoFile: DemoFile = new demofile.DemoFile();
     private readonly fileBuffer: Buffer;
     private logger: Logger;
     private readonly connection: Connection;
-
-    private steamIdsInMatch: string[] = [];
-    private playersInMatch: Player[] = [];
 
     constructor(fileBuffer: Buffer, connection: Connection) {
         this.fileBuffer = fileBuffer;
@@ -31,28 +30,33 @@ export default class Demo {
 
         return new Promise((resolve, reject) => {
             this.logger.debug(`Starting processing`);
+            const promises: Promise<Match>[] = [];
 
-            this.demoFile.gameEvents.on('round_start', async () => {
-                const players = this.demoFile.players;
-
-                for (const demoPlayer of players) {
-                    const demoPlayerSteamId = demoPlayer.steam64Id.toString();
-
-                    this.pushPlayer(demoPlayerSteamId);
-
+                for (const detector of Detectors) {
+                    const detectorClass = new detector(this.demoFile);
+                    promises.push(detectorClass.calculate(match));
                 }
-            });
+
 
             this.demoFile.on('end', async () => {
                 try {
                     this.logger.debug(`Demo file has ended, saving data.`);
+
+
+                    try {
+                        await Promise.all(promises);
+                    } catch (e) {
+                        this.logger.error(`Error while running Detectors`, e);
+                        Sentry.captureException(e);
+                        throw e;
+                    }
 
                     const queryRunner = this.connection.createQueryRunner();
 
                     await queryRunner.connect();
                     await queryRunner.startTransaction();
                     try {
-                        match.players = this.playersInMatch;
+
                         await match.save();
                         await queryRunner.commitTransaction();
                     } catch (err) {
@@ -73,27 +77,4 @@ export default class Demo {
             this.demoFile.parse(this.fileBuffer);
         });
     }
-
-    async pushPlayer(steamId: string) {
-
-        const existsInCurrentMatch = this.steamIdsInMatch.indexOf(steamId) === -1 ? false : true;
-        const isSteamId = /[0-9]{17}/.test(steamId);
-
-        if (!existsInCurrentMatch && isSteamId) {
-            this.steamIdsInMatch.push(steamId);
-            const existingRecord = await Player.findOne({ where: { steamId } });
-            let player: Player;
-
-            if (existingRecord) {
-                player = existingRecord;
-            } else {
-                player = new Player();
-                player.steamId = steamId;
-            }
-            this.playersInMatch.push(await player.save());
-            this.logger.log(`Detected player ${steamId} in match`);
-        }
-
-    }
-
 }
