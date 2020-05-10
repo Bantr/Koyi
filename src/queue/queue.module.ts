@@ -7,15 +7,14 @@ import { QueueService } from './queue.service';
 dotenv.config();
 
 const redisOptions = {
-    host: process.env.BANTR_REDIS_HOST,
-    port: parseInt(process.env.BANTR_REDIS_PORT,10),
-    keyPrefix: 'bantr-koyi'
-}
+  host: process.env.BANTR_REDIS_HOST,
+  port: parseInt(process.env.BANTR_REDIS_PORT, 10)
+};
 
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: 'faceit', 
+      name: 'faceit',
       redis: redisOptions
     }),
     BullModule.registerQueue({
@@ -30,4 +29,4 @@ const redisOptions = {
   providers: [QueueService],
   exports: [QueueService]
 })
-export class QueueModule { }
+export class QueueModule {}
