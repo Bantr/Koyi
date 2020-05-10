@@ -55,23 +55,13 @@ export class FaceitService {
     // TODO: Runs for every user now, should select a subset of users to check at a time
     const users = await this.userRepository.getUsers();
 
-    // TODO: create a query for this
-    const usersWithoutFaceit = users.filter(_ => !_.faceitId);
-
-    for (const user of usersWithoutFaceit) {
-      try {
-        await this.updateUserFaceit(user);
-      } catch (e) {
-        Sentry.captureException(e);
-        this.logger.error(e);
-      }
-    }
+    const updatedUsers = await this.handleUserFaceitUpdate(users);
 
     this.logger.verbose(
-      `Found ${users.length} Faceit users to check for new matches`
+      `Found ${updatedUsers.length} Faceit users to check for new matches`
     );
     // TODO: split this into separate queue jobs, to spread load & more accurate retries/failures
-    for (const user of users) {
+    for (const user of updatedUsers) {
       const history = await this.getPlayerHistory(user.faceitId);
 
       this.logger.debug(
@@ -91,12 +81,24 @@ export class FaceitService {
     return;
   }
 
-  private async updateUserFaceit(user: User) {
-    const {
-      player_id: faceitId,
-      nickname
-    } = await this.getFaceitProfileForSteamId(user.steamId);
+  /**
+   * Handles the process of getting users without faceit info, searching faceit for that info and saving it to the user entity
+   * @param users Users to check
+   */
+  private async handleUserFaceitUpdate(users: User[]) {
+    return Promise.all(
+      users.map(user => {
+        if (!user.faceitId) {
+          return this.updateUserFaceit(user);
+        }
+        return user;
+      })
+    );
+  }
 
+  private async updateUserFaceit(user: User) {
+    const response = await this.getFaceitProfileForSteamId(user.steamId);
+    const { player_id: faceitId, nickname } = response.data;
     user.faceitId = faceitId;
     user.faceitName = nickname;
     return await user.save();
