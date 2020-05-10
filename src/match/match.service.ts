@@ -5,13 +5,13 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as Sentry from '@sentry/node';
 import { Job, Queue } from 'bull';
-import { UserRepository } from 'src/user/user.repository';
 import { Connection } from 'typeorm';
 import { promisify } from 'util';
 import { unzip } from 'zlib';
 
 import { PlayerService } from '../player/player.service';
 import { QueueService } from '../queue/queue.service';
+import { UserRepository } from '../user/user.repository';
 import Demo from './demo';
 import { CsgoMatchDto } from './dto/csgoMatch.dto';
 import { MatchRepository } from './match.repository';
