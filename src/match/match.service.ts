@@ -11,6 +11,7 @@ import { unzip } from 'zlib';
 
 import { PlayerService } from '../player/player.service';
 import { QueueService } from '../queue/queue.service';
+import { UserRepository } from '../user/user.repository';
 import Demo from './demo';
 import { CsgoMatchDto } from './dto/csgoMatch.dto';
 import { MatchRepository } from './match.repository';
@@ -41,6 +42,8 @@ export class MatchService {
   constructor(
     @InjectRepository(MatchRepository)
     private matchRepository: MatchRepository,
+    @InjectRepository(UserRepository)
+    private userRepository: UserRepository,
     private readonly httpService: HttpService,
     private queueService: QueueService,
     private playerService: PlayerService,
@@ -57,7 +60,6 @@ export class MatchService {
    */
 
   public async addMatchToQueue(data: CsgoMatchDto) {
-
     const exists = await this.checkIfExists(data.type, data.externalId);
 
     if (exists) {
@@ -65,7 +67,9 @@ export class MatchService {
       return;
     }
 
-    this.logger.debug(`addMatchToQueue() - Handling a new match of type ${data.type}`);
+    this.logger.debug(
+      `addMatchToQueue() - Handling a new match of type ${data.type}`
+    );
 
     await this.matchesQueue.add(data);
   }
@@ -81,7 +85,7 @@ export class MatchService {
     const exists = await this.checkIfExists(data.type, data.externalId);
 
     if (exists) {
-      // If the ban is already handled, discard the job
+      // If the match is already handled, discard the job
       return;
     }
 
@@ -89,13 +93,28 @@ export class MatchService {
 
     const buffer = await this.downloadDemo(data);
 
-    await job.progress(0.50);
+    await job.progress(0.5);
 
     const match = await this.handleDemo(buffer, data);
 
     await job.progress(0.75);
 
+    // Update steam profile information
     await this.playerService.updateSteamProfile(match.players);
+
+    // Update tracking info
+    const usersInMatch = await this.userRepository.find({
+      where: match.players.map(_ => {
+        return {
+          steamId: _.steamId
+        };
+      })
+    });
+
+    for (const user of usersInMatch) {
+      user.tracks = match.players;
+      await user.save();
+    }
 
     await job.progress(1);
 
@@ -104,18 +123,20 @@ export class MatchService {
 
   private async downloadDemo(match: CsgoMatchDto): Promise<Buffer> {
     return new Promise((resolve, reject) => {
+      this.httpService
+        .get(match.demoUrl, { responseType: 'arraybuffer' })
+        .toPromise()
+        .then(async response => {
+          const doUnzip = promisify(unzip);
 
-      this.httpService.get(match.demoUrl, { responseType: 'arraybuffer' }).toPromise().then(async response => {
-
-        const doUnzip = promisify(unzip);
-
-        doUnzip(response.data).then(buffer => {
-          resolve(buffer as Buffer);
+          doUnzip(response.data).then(buffer => {
+            resolve(buffer as Buffer);
+          });
         })
-      }).catch(e => {
-        this.logger.error(e);
-        reject(e);
-      });
+        .catch(e => {
+          this.logger.error(e);
+          reject(e);
+        });
     });
   }
 
@@ -129,7 +150,9 @@ export class MatchService {
   }
 
   async checkIfExists(type: IMatchType, externalId: string): Promise<boolean> {
-    const matches = await this.matchRepository.find({ where: { type, externalId } });
+    const matches = await this.matchRepository.find({
+      where: { type, externalId }
+    });
     return !!matches.length;
   }
 
@@ -154,7 +177,9 @@ export class MatchService {
    */
   @OnQueueFailed()
   onFailed(job: Job, err: Error) {
-    this.logger.error(`Job ${job.id} of type ${job.name} from queue ${job.queue.name} has failed!`);
+    this.logger.error(
+      `Job ${job.id} of type ${job.name} from queue ${job.queue.name} has failed!`
+    );
     Sentry.captureException(err);
   }
 
@@ -167,5 +192,4 @@ export class MatchService {
     this.logger.error(`An error occured in a queue!`, err.stack);
     Sentry.captureException(err);
   }
-
 }
