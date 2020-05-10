@@ -42,7 +42,6 @@ export default class Demo {
                 try {
                     this.logger.debug(`Demo file has ended, saving data.`);
 
-
                     try {
                         await Promise.all(promises);
                     } catch (e) {
