@@ -1,34 +1,15 @@
 import { IBanType } from '@bantr/lib/dist/types';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as faker from 'faker';
 
+import { mockBanStatus } from '../../test/globals';
 import { FaceitService } from '../faceit/faceit.service';
 import { NotificationService } from '../notification/notification.service';
 import Player from '../player/player.entity';
 import { PlayerService } from '../player/player.service';
 import { QueueService } from '../queue/queue.service';
-import { EconomyBan, IGetPlayerBansResponse, SteamService } from '../steam/steam.service';
+import { EconomyBan, SteamService } from '../steam/steam.service';
 import { BanRepository } from './ban.repository';
 import { BanService } from './ban.service';
-
-export function mockBanStatus(options: IGetPlayerBansResponse = {
-  CommunityBanned: faker.random.boolean(),
-  DaysSinceLastBan: faker.random.number({ min: 0, max: 9999 }),
-  NumberOfGameBans: faker.random.number({ min: 0, max: 10 }),
-  NumberOfVACBans: faker.random.number({ min: 0, max: 10 }),
-  VACBanned: true,
-  SteamId: '76561198028175942',
-  EconomyBan: EconomyBan.Banned
-}): IGetPlayerBansResponse {
-
-  if (options.NumberOfVACBans > 0) {
-    options.VACBanned = true;
-  } else {
-    options.VACBanned = false;
-  }
-
-  return options;
-}
 
 const mockBanRepository = () => ({
   findBansForPlayer: jest.fn(),
@@ -65,7 +46,8 @@ describe('BanService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BanService,
+      providers: [
+        BanService,
         { provide: BanRepository, useFactory: mockBanRepository },
         { provide: QueueService, useFactory: mockQueueService },
         { provide: PlayerService, useFactory: mockPlayerService },
@@ -81,7 +63,9 @@ describe('BanService', () => {
     playerService = await module.get<PlayerService>(PlayerService);
     faceitService = await module.get<FaceitService>(FaceitService);
     steamService = await module.get<SteamService>(SteamService);
-    notificationService = await module.get<NotificationService>(NotificationService);
+    notificationService = await module.get<NotificationService>(
+      NotificationService
+    );
   });
 
   it('should be defined', () => {
@@ -98,15 +82,18 @@ describe('BanService', () => {
         { type: IBanType.Game },
         { type: IBanType.Economy }
       ]);
-      await service.processProfile(player, mockBanStatus({
-        NumberOfVACBans: 0,
-        NumberOfGameBans: 0,
-        CommunityBanned: false,
-        DaysSinceLastBan: 4,
-        EconomyBan: EconomyBan.NotBanned,
-        VACBanned: true,
-        SteamId: 'aaa'
-      }));
+      await service.processProfile(
+        player,
+        mockBanStatus({
+          NumberOfVACBans: 0,
+          NumberOfGameBans: 0,
+          CommunityBanned: false,
+          DaysSinceLastBan: 4,
+          EconomyBan: EconomyBan.NotBanned,
+          VACBanned: true,
+          SteamId: 'aaa'
+        })
+      );
 
       expect(banRepository.deleteBan).toHaveBeenCalledTimes(4);
     });
@@ -115,15 +102,18 @@ describe('BanService', () => {
       const player = new Player();
       player.lastCheckedAt = new Date(0);
       banRepository.findBansForPlayer.mockResolvedValue([{ a: 'b' }]);
-      const result = await service.processProfile(player, mockBanStatus({
-        NumberOfVACBans: 2,
-        NumberOfGameBans: 4,
-        CommunityBanned: false,
-        DaysSinceLastBan: 4,
-        EconomyBan: EconomyBan.NotBanned,
-        VACBanned: true,
-        SteamId: 'aaa'
-      }));
+      const result = await service.processProfile(
+        player,
+        mockBanStatus({
+          NumberOfVACBans: 2,
+          NumberOfGameBans: 4,
+          CommunityBanned: false,
+          DaysSinceLastBan: 4,
+          EconomyBan: EconomyBan.NotBanned,
+          VACBanned: true,
+          SteamId: 'aaa'
+        })
+      );
       expect(banRepository.createBan).toHaveBeenCalledTimes(6);
       expect(result.newBans.length).toEqual(6);
       expect(result.hasBan).toEqual(true);
