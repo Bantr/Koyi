@@ -84,7 +84,7 @@ export class MatchService {
    * Transfroms the data gotten from the source into something useable by the system
    * @param job
    */
-  @Process({ name: '__default__', concurrency: 5 })
+  @Process({ name: '__default__' })
   async handleMatch(job: Job) {
     const data = job.data as CsgoMatchDto;
 
@@ -107,11 +107,17 @@ export class MatchService {
         return {
           steamId: _.steamId
         };
-      })
+      }),
+      relations: ['tracks']
     });
 
     for (const user of usersInMatch) {
-      user.tracks = match.players;
+      for (const player of match.players) {
+        // Only push players into array that are unique
+        if (user.tracks.indexOf(player) === -1) {
+          user.tracks.push(player);
+        }
+      }
       await user.save();
     }
 
