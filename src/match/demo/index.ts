@@ -7,7 +7,7 @@ import { Logger } from '@nestjs/common';
 import { Connection } from 'typeorm';
 
 import * as Sentry from '@sentry/node'
-import Detectors from './detectors' 
+import Detectors from './detectors'
 
 export default class Demo {
     private readonly demoFile: DemoFile = new demofile.DemoFile();
@@ -18,13 +18,9 @@ export default class Demo {
     constructor(fileBuffer: Buffer, connection: Connection) {
         this.fileBuffer = fileBuffer;
         this.connection = connection;
-
     }
 
-    public handle(matchData: CsgoMatchDto): Promise<Match> {
-        const match = new Match();
-        match.date = new Date();
-        match.externalId = matchData.externalId;
+    public handle(matchData: CsgoMatchDto, match: Match): Promise<Match> {
         match.type = matchData.type;
         this.logger = new Logger(`DEMO ${match.externalId}`);
 
@@ -32,10 +28,10 @@ export default class Demo {
             this.logger.debug(`Starting processing`);
             const promises: Promise<Match>[] = [];
 
-                for (const detector of Detectors) {
-                    const detectorClass = new detector(this.demoFile);
-                    promises.push(detectorClass.calculate(match));
-                }
+            for (const detector of Detectors) {
+                const detectorClass = new detector(this.demoFile);
+                promises.push(detectorClass.calculate(match));
+            }
 
 
             this.demoFile.on('end', async () => {
