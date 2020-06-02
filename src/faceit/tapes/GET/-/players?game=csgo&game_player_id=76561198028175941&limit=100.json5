@@ -1,0 +1,197 @@
+{
+    meta: {
+        createdAt: '2020-06-02T09:08:58.527Z',
+        host: 'https://open.faceit.com/data/v4',
+        resHumanReadable: true,
+    },
+    req: {
+        url: '/players?game=csgo&game_player_id=76561198028175941&limit=100',
+        method: 'GET',
+        headers: {
+            accept: 'application/json, text/plain, */*',
+            'user-agent': 'axios/0.19.2',
+            connection: 'close',
+        },
+        body: '',
+    },
+    res: {
+        status: 200,
+        headers: {
+            date: [
+                'Tue, 02 Jun 2020 09:08:58 GMT',
+            ],
+            'content-type': [
+                'application/json; charset=utf-8',
+            ],
+            'transfer-encoding': [
+                'chunked',
+            ],
+            connection: [
+                'close',
+            ],
+            'set-cookie': [
+                '__cfduid=df1aab1e04e18d0903a43d24bcd3116201591088938; expires=Thu, 02-Jul-20 09:08:58 GMT; path=/; domain=.faceit.com; HttpOnly; SameSite=Lax; Secure',
+                '__cf_bm=80472e529e88bb8a577bcc7ea84200638c9a7e48-1591088938-1800-AZF5OwRd4tJXMChC8mv2eHJspy6rHDuPs4UkwTIlMbAICOvwLZ/XF13KK+oLfNT28FEjHDvMMQ/JAbwkLfC5UgM=; path=/; expires=Tue, 02-Jun-20 09:38:58 GMT; domain=.faceit.com; HttpOnly; Secure; SameSite=None',
+                '__cfruid=bdae1d9b08bff5e7910cc8c04085c7c5cc67ff17-1591088938; path=/; domain=.faceit.com; HttpOnly; Secure; SameSite=None',
+            ],
+            'cache-control': [
+                'max-age=10',
+            ],
+            'faceit-env': [
+                'prod',
+            ],
+            'faceit-service': [
+                'open-data-api',
+            ],
+            'faceit-version': [
+                '1.12.0',
+            ],
+            'x-envoy-upstream-service-time': [
+                '44',
+            ],
+            'x-envoy-decorator-operation': [
+                'open-data-api.team-devtools.svc.cluster.local:80/*',
+            ],
+            via: [
+                '1.1 google',
+            ],
+            'alt-svc': [
+                'h3-27=":443"; ma=86400',
+            ],
+            'cf-cache-status': [
+                'BYPASS',
+            ],
+            'cf-request-id': [
+                '0315e3963e00009742668f1200000001',
+            ],
+            'expect-ct': [
+                'max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"',
+            ],
+            server: [
+                'cloudflare',
+            ],
+            'cf-ray': [
+                '59d00869fd0f9742-FRA',
+            ],
+        },
+        body: {
+            player_id: 'd7ca3835-27c2-4c1f-a76e-6a21bb2c6dd6',
+            nickname: 'Catalysm_',
+            avatar: 'https://assets.faceit-cdn.net/avatars/d7ca3835-27c2-4c1f-a76e-6a21bb2c6dd6_1550945253370.jpg',
+            country: 'be',
+            cover_image: 'https://assets.faceit-cdn.net/users_covers/d7ca3835-27c2-4c1f-a76e-6a21bb2c6dd6_1550835506605.jpg',
+            cover_featured_image: '',
+            infractions: {
+                last_infraction_date: 'Wed May 17 14:56:28 UTC 2017',
+                afk: 0,
+                leaver: 0,
+                qm_not_checkedin: 1,
+                qm_not_voted: 0,
+            },
+            platforms: {
+                steam: 'STEAM_0:1:33955106',
+            },
+            games: {
+                csgo: {
+                    game_profile_id: 'c114df72-c905-424c-a6ed-2132804ba019',
+                    region: 'EU',
+                    regions: {
+                        EU: {
+                            selected_ladder_id: '97f8bae9-6712-443a-a129-57e69f346cc9',
+                        },
+                    },
+                    skill_level_label: '8',
+                    game_player_id: '76561198028175941',
+                    skill_level: 8,
+                    faceit_elo: 1842,
+                    game_player_name: 'Catalysm',
+                },
+                csco: {
+                    game_profile_id: '3831e543-56c6-425a-bf89-d0c6082a979d',
+                    region: 'EU',
+                    regions: {
+                        EU: {
+                            selected_ladder_id: '096acd8f-52f6-4342-a4db-415001ed2286',
+                        },
+                    },
+                    skill_level_label: '3',
+                    game_player_id: '76561198028175941',
+                    skill_level: 3,
+                    faceit_elo: 1044,
+                    game_player_name: 'Catalysm',
+                },
+            },
+            settings: {
+                language: 'en',
+            },
+            friends_ids: [
+                '67c46ef8-effd-4b98-8cb0-47009d4cf8bd',
+                '957ee4c2-1017-4c03-9425-6596f389fdbf',
+                '248b36e3-1257-4f7f-b2ec-8a8a0dcd9bc5',
+                'add63477-cef7-4f16-99ca-ad7bc5b140cc',
+                '988fd410-14ce-4a9d-80e0-8362b862541a',
+                '3a0a1b2a-6ab5-4d1f-8384-254b851b2884',
+                '7f87f48d-e421-42f6-88bb-f5e47e68cc5d',
+                '8218f78f-e4e9-46c2-8668-a73624595b89',
+                '302b7f59-0ea9-46e1-820e-9f02526da10e',
+                '341e9e46-a001-4324-8572-fcb50bd895ee',
+                '3ff62520-4699-4fe3-b4df-9cd5703502cc',
+                '06bf83b6-b66d-445f-9b6d-e75a6082c3e7',
+                'ac4ae7bd-7ae6-4d2e-b64b-0c06526e071e',
+                '17509c75-1c83-4bac-8140-4f43fa8beff5',
+                '872324c3-c9fd-409e-a84c-23fbc0f00ceb',
+                '4d31b467-cb3e-4ba1-8441-d251ec7e8117',
+                '862509c2-fab8-4622-af7c-72d67ae39fd9',
+                '3303a0aa-0ba3-4f93-b9ff-dfaf7337d254',
+                'fd9c2b50-0a7d-435d-8198-a2b0792ac632',
+                '2a15cfee-023c-43b1-8897-86879508dd9b',
+                'a713c669-85c0-47dd-bb9e-45ab6500dc12',
+                'ea44aea6-f9bc-4b2a-affa-be86cd56013d',
+                '08565c40-69af-4e4c-a022-a6e719a1a9d4',
+                '1a580a8c-0d81-4a9b-95b8-0b9eea64d89a',
+                '86765b32-a586-4f28-8543-0e148421d677',
+                'e6e7e980-e0d6-4666-90f6-ce16bfe823d4',
+                '3693a9d0-60da-4858-950e-7f2b0f351030',
+                'a6554199-48db-4b28-8770-85b83eda6524',
+                '0b487892-042d-4cd3-a518-fcf146cb0fe9',
+                '6902bbe1-cd3f-499c-acb2-fec30dc1fabf',
+                '0bd0e95c-64bb-4aac-a1d0-943b6f22155b',
+                'a94f39fb-bcd6-48d2-9e35-76c3e8c2af26',
+                '553a950f-6da3-4a37-85df-9b2fb8b68371',
+                '95a158d8-6fac-4bd4-a2fb-5b3db2a07317',
+                '24d13f24-29ee-48cc-b6c2-4a17e16b7ebb',
+                'fe1db2e1-2bc4-4cbe-95ca-e06f6d05ae97',
+                'c8404e86-9f15-4c4d-9f1c-893e565582de',
+                'a6ec64d0-5212-458c-a8e1-1dc2bd3a1710',
+                'a3b3cbf4-2fb8-4e4e-8718-5d9015074d06',
+                '60663016-262e-4647-84ba-df4764d348ed',
+                '5c98791f-2f76-44a8-b8dd-15a4289e8e9a',
+                '5d41f6c2-043f-49a4-9a23-890fc802c71e',
+                'e46928e5-bc07-4f7d-b9e2-d65aacb67d91',
+                '00ff7207-72fa-467c-9392-7c3c22e67985',
+                '83b65766-9666-4d4e-8d32-90cfea7855c0',
+                'bbc955db-62e1-4c4b-8a41-986c1beb1a9c',
+                '343b5898-9107-4cb8-ac82-58428b46406e',
+                '3c6a8c05-0615-4fca-91df-610be7b67097',
+                '3c372f65-8fa7-4bff-9a6d-9009308d885d',
+                '4a22c21e-7bf0-45fd-adc0-e9a3bd7ec28a',
+                '16303ba4-7e0f-486a-8e58-102076c56ac1',
+                'dc6ffe5e-29c6-45d6-929f-cdb2264ef40d',
+                'a71da512-a734-4283-9435-2c4000a75c04',
+                '4a9da04a-aa60-47b5-ba0b-28ac2c4c4035',
+                '1818b16c-b8f1-4da0-9430-a59432912caa',
+                'c7fa1852-fb0f-429a-a1dc-a4f989bc305c',
+                '58d996ce-992c-4fa7-a2e8-46438fabc7a4',
+            ],
+            bans: [],
+            new_steam_id: '[U:1:67910213]',
+            steam_id_64: '76561198028175941',
+            steam_nickname: 'Catalysm',
+            membership_type: 'free',
+            memberships: [
+                'free',
+            ],
+            faceit_url: 'https://www.faceit.com/{lang}/players/Catalysm_',
+        },
+    },
+}

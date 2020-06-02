@@ -37,3 +37,6 @@ jobs:
         with:
           coverageCommand: npm run test:cov
           debug: true
+      - uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage/clover.xml
