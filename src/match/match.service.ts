@@ -63,7 +63,7 @@ export class MatchService {
     const exists = await this.checkIfExists(data.type, data.externalId);
 
     if (exists) {
-      // If the ban is already handled, discard the job
+      // If the match is already handled, discard the job
       return;
     }
 
@@ -78,7 +78,7 @@ export class MatchService {
    * Transfroms the data gotten from the source into something useable by the system
    * @param job
    */
-  @Process({ name: '__default__' })
+  @Process({ name: '__default__', concurrency: 5 })
   async handleMatch(job: Job) {
     const data = job.data as CsgoMatchDto;
 

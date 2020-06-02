@@ -43,7 +43,13 @@ export class NotificationService {
     // Get users that track this account
     const users = player.trackedBy;
     try {
-      await this.sendToGlobalChannel(options);
+
+      const notPreExistingBan = (bans: Array<Ban>) => bans.some(_ => !_.preExisting);
+
+      if (notPreExistingBan(newBans)) {
+        await this.sendToGlobalChannel(options);
+      }
+
     } catch (error) {
       this.logger.error(error);
     }
