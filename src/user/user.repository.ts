@@ -29,6 +29,10 @@ export class UserRepository extends Repository<User> {
     return response.tracks;
   }
 
+  async saveUser(user: User) {
+    return await user.save();
+  }
+
   async getSettings(user: User) {
     return await this.findOne(user.id, { relations: ['settings'] });
   }

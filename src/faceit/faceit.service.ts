@@ -101,7 +101,7 @@ export class FaceitService {
     const { player_id: faceitId, nickname } = response.data;
     user.faceitId = faceitId;
     user.faceitName = nickname;
-    return await user.save();
+    return await this.userRepository.saveUser(user);
   }
 
   /**
@@ -168,12 +168,16 @@ export class FaceitService {
     return { Authorization: `Bearer ${this.faceitApiKey}` };
   }
 
+  private getFaceItApiUrl() {
+    return 'https://open.faceit.com/data/v4';
+  }
+
   // TODO: Create a proper interface for this API response
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async doRequest(endpoint: string): Promise<any> {
     try {
       const response = await this.httpService
-        .get(`https://open.faceit.com/data/v4${endpoint}`, {
+        .get(`${this.getFaceItApiUrl()}${endpoint}`, {
           headers: this.getHeaders(),
           params: {
             limit: 100

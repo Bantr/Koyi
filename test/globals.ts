@@ -4,10 +4,16 @@ import * as faker from 'faker';
 
 import { EconomyBan, IGetPlayerBansResponse } from '../src/steam/steam.service';
 
-export function mockUser(): User {
+export function mockUser(options: IMockUserOptions): User {
   const user = new User();
   user.discordId = process.env.BANTR_TEST_DISCORD_USER_ID;
   user.settings = new UserSettings();
+  user.steamId = '76561198028175941';
+  user.faceitId = options.emptyFaceitProfile
+    ? null
+    : 'd7ca3835-27c2-4c1f-a76e-6a21bb2c6dd6';
+  user.faceitName = options.emptyFaceitProfile ? null : 'Catalysm_';
+  user.username = 'Catalysm';
 
   user.settings.notificationDiscordEnabled = true;
   user.settings.notificationVACEnabled = true;
@@ -17,6 +23,10 @@ export function mockUser(): User {
   user.settings.notificationFaceitEnabled = true;
 
   return user;
+}
+
+interface IMockUserOptions {
+  emptyFaceitProfile?: boolean;
 }
 
 export function mockBan(player: Player) {

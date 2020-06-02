@@ -56,7 +56,7 @@ describe('NotificationService', () => {
 
   it('Should send a pretty embed', () => {
     const player = mockPlayer();
-    const user = mockUser();
+    const user = mockUser({});
     player.trackedBy = [user];
 
     const newBans = [mockBan(player)];
@@ -85,7 +85,7 @@ describe('NotificationService', () => {
         'filterDataBasedOnSettings'
       );
       const player = mockPlayer();
-      const user = mockUser();
+      const user = mockUser({});
       player.trackedBy = [user];
       await service.sendNotification({
         deletedBans: [mockBan(player)],
@@ -98,7 +98,7 @@ describe('NotificationService', () => {
   describe('filterDataBasedOnSettings', () => {
     it(`Filters correctly for all ban types`, () => {
       const player = mockPlayer();
-      const user = mockUser();
+      const user = mockUser({});
       player.trackedBy = [user];
       const bans = [mockBan(player), mockBan(player)];
       expect(

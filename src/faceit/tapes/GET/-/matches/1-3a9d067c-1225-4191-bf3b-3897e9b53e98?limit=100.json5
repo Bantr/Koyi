@@ -1,0 +1,264 @@
+{
+    meta: {
+        createdAt: '2020-06-01T17:40:20.998Z',
+        host: 'https://open.faceit.com/data/v4',
+        resHumanReadable: true,
+    },
+    req: {
+        url: '/matches/1-3a9d067c-1225-4191-bf3b-3897e9b53e98?limit=100',
+        method: 'GET',
+        headers: {
+            accept: 'application/json, text/plain, */*',
+            'user-agent': 'axios/0.19.2',
+            connection: 'close',
+        },
+        body: '',
+    },
+    res: {
+        status: 200,
+        headers: {
+            date: [
+                'Mon, 01 Jun 2020 17:40:21 GMT',
+            ],
+            'content-type': [
+                'application/json; charset=utf-8',
+            ],
+            'transfer-encoding': [
+                'chunked',
+            ],
+            connection: [
+                'close',
+            ],
+            'set-cookie': [
+                '__cfduid=da1a539382598f090e54925c4f4f786eb1591033221; expires=Wed, 01-Jul-20 17:40:21 GMT; path=/; domain=.faceit.com; HttpOnly; SameSite=Lax; Secure',
+                '__cf_bm=2a1822221a76a03f56e7d6f34f3b6962c5fcb496-1591033221-1800-AW06//wD4ATaidk4hAcplG2BuGnk9kMnTH0fKMPHyx1SLqjAxR+iOCgLEKS/yKpZQpzg6Ve7wN6aMqioDGuJOaU=; path=/; expires=Mon, 01-Jun-20 18:10:21 GMT; domain=.faceit.com; HttpOnly; Secure; SameSite=None',
+                '__cfruid=7a09c4338cea559bd7e4f86fd4b201dbc93b7c59-1591033221; path=/; domain=.faceit.com; HttpOnly; Secure; SameSite=None',
+            ],
+            'cache-control': [
+                'max-age=10',
+            ],
+            'faceit-env': [
+                'prod',
+            ],
+            'faceit-service': [
+                'open-data-api',
+            ],
+            'faceit-version': [
+                '1.12.0',
+            ],
+            'x-envoy-upstream-service-time': [
+                '491',
+            ],
+            'x-envoy-decorator-operation': [
+                'open-data-api.team-devtools.svc.cluster.local:80/*',
+            ],
+            via: [
+                '1.1 google',
+            ],
+            'alt-svc': [
+                'h3-27=":443"; ma=86400',
+            ],
+            'cf-cache-status': [
+                'BYPASS',
+            ],
+            'cf-request-id': [
+                '03129167960000175629a80200000001',
+            ],
+            'expect-ct': [
+                'max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"',
+            ],
+            server: [
+                'cloudflare',
+            ],
+            'cf-ray': [
+                '59cab81f5cae1756-FRA',
+            ],
+        },
+        body: {
+            match_id: '1-3a9d067c-1225-4191-bf3b-3897e9b53e98',
+            version: 2,
+            game: 'csgo',
+            region: 'EU',
+            competition_id: '42e160fc-2651-4fa5-9a9b-829199e27adb',
+            competition_type: 'matchmaking',
+            competition_name: 'CS:GO 5v5',
+            organizer_id: 'faceit',
+            teams: {
+                faction1: {
+                    faction_id: 'c7abdf31-8d26-469b-9db2-93dbbdc98d11',
+                    leader: 'c7abdf31-8d26-469b-9db2-93dbbdc98d11',
+                    avatar: 'https://assets.faceit-cdn.net/avatars/c7abdf31-8d26-469b-9db2-93dbbdc98d11_1590600295402.jpg',
+                    roster: [
+                        {
+                            player_id: 'fb23bf33-337a-421f-8658-0de2a6c27047',
+                            nickname: 'CrownTE',
+                            avatar: 'https://assets.faceit-cdn.net/avatars/fb23bf33-337a-421f-8658-0de2a6c27047_1560096773795.jpg',
+                            membership: 'free',
+                            game_player_id: '76561198082938550',
+                            game_player_name: '*kalvein*',
+                            game_skill_level: 6,
+                            anticheat_required: true,
+                        },
+                        {
+                            player_id: '7213d728-0039-4bf0-a41e-2114e6dcaef5',
+                            nickname: 'BMJreaper',
+                            avatar: '',
+                            membership: 'free',
+                            game_player_id: '76561199032879012',
+                            game_player_name: 'reaper',
+                            game_skill_level: 6,
+                            anticheat_required: true,
+                        },
+                        {
+                            player_id: '45c33429-601e-43b1-ad4c-f4a49bad9025',
+                            nickname: 'Akame1769',
+                            avatar: 'https://assets.faceit-cdn.net/avatars/45c33429-601e-43b1-ad4c-f4a49bad9025_1584696189455.jpg',
+                            membership: 'free',
+                            game_player_id: '76561199032962765',
+                            game_player_name: 'Altair',
+                            game_skill_level: 7,
+                            anticheat_required: true,
+                        },
+                        {
+                            player_id: 'a7417dcf-a1d9-47df-b73a-7b18a0872d5e',
+                            nickname: 'marchelo3',
+                            avatar: 'https://assets.faceit-cdn.net/avatars/a7417dcf-a1d9-47df-b73a-7b18a0872d5e_1566393305781.jpg',
+                            membership: 'free',
+                            game_player_id: '76561198355244353',
+                            game_player_name: 'ヴラド Marche!o',
+                            game_skill_level: 7,
+                            anticheat_required: true,
+                        },
+                        {
+                            player_id: 'c7abdf31-8d26-469b-9db2-93dbbdc98d11',
+                            nickname: 'st1fmeiister',
+                            avatar: 'https://assets.faceit-cdn.net/avatars/c7abdf31-8d26-469b-9db2-93dbbdc98d11_1590600295402.jpg',
+                            membership: 'premium',
+                            game_player_id: '76561198950653409',
+                            game_player_name: '',
+                            game_skill_level: 6,
+                            anticheat_required: true,
+                        },
+                    ],
+                    substituted: false,
+                    name: 'team_st1fmeiister',
+                    type: '',
+                },
+                faction2: {
+                    faction_id: '58d996ce-992c-4fa7-a2e8-46438fabc7a4',
+                    leader: '58d996ce-992c-4fa7-a2e8-46438fabc7a4',
+                    avatar: 'https://assets.faceit-cdn.net/avatars/58d996ce-992c-4fa7-a2e8-46438fabc7a4_1550900321526.jpg',
+                    roster: [
+                        {
+                            player_id: '58d996ce-992c-4fa7-a2e8-46438fabc7a4',
+                            nickname: 'cbaRoss',
+                            avatar: 'https://assets.faceit-cdn.net/avatars/58d996ce-992c-4fa7-a2e8-46438fabc7a4_1550900321526.jpg',
+                            membership: 'csgo',
+                            game_player_id: '76561198100577908',
+                            game_player_name: 'Josh is Gay',
+                            game_skill_level: 4,
+                            anticheat_required: true,
+                        },
+                        {
+                            player_id: 'd7ca3835-27c2-4c1f-a76e-6a21bb2c6dd6',
+                            nickname: 'Catalysm_',
+                            avatar: 'https://assets.faceit-cdn.net/avatars/d7ca3835-27c2-4c1f-a76e-6a21bb2c6dd6_1550945253370.jpg',
+                            membership: 'free',
+                            game_player_id: '76561198028175941',
+                            game_player_name: 'Catalysm',
+                            game_skill_level: 8,
+                            anticheat_required: true,
+                        },
+                        {
+                            player_id: 'fb5f2343-677a-4c42-83a9-5a64b0328809',
+                            nickname: 'DEFF2GEE-',
+                            avatar: '',
+                            membership: 'free',
+                            game_player_id: '76561198988406181',
+                            game_player_name: 'SHANNARA',
+                            game_skill_level: 7,
+                            anticheat_required: true,
+                        },
+                        {
+                            player_id: 'f91d760a-31e5-46cd-9bff-acb5206abab5',
+                            nickname: 'tommiplz',
+                            avatar: 'https://assets.faceit-cdn.net/avatars/f91d760a-31e5-46cd-9bff-acb5206abab5_1559333838713.jpg',
+                            membership: 'free',
+                            game_player_id: '76561197995543506',
+                            game_player_name: 'Veivarilolhotchicks',
+                            game_skill_level: 6,
+                            anticheat_required: true,
+                        },
+                        {
+                            player_id: '767ced59-a3ff-466b-8ba4-8af2654bf55b',
+                            nickname: 'GOTEN1',
+                            avatar: 'https://assets.faceit-cdn.net/avatars/767ced59-a3ff-466b-8ba4-8af2654bf55b_1589899071644.jpg',
+                            membership: 'free',
+                            game_player_id: '76561198261997208',
+                            game_player_name: 'dERA',
+                            game_skill_level: 7,
+                            anticheat_required: true,
+                        },
+                    ],
+                    substituted: false,
+                    name: 'team_cbaRoss',
+                    type: '',
+                },
+            },
+            voting: {
+                voted_entity_types: [
+                    'map',
+                ],
+                map: {
+                    pick: [
+                        'de_cache',
+                    ],
+                    entities: [
+                        {
+                            name: 'de_cache',
+                            class_name: 'de_cache',
+                            game_map_id: 'de_cache',
+                            guid: 'de_cache',
+                            image_lg: 'https://cdn.faceit.com/games/votables/csgo/maps/de_cache_428x212.jpg',
+                            image_sm: 'https://cdn.faceit.com/games/votables/csgo/maps/de_cache_110x55.jpg',
+                        },
+                        {
+                            class_name: 'de_train',
+                            game_map_id: 'de_train',
+                            guid: 'de_train',
+                            image_lg: 'https://cdn.faceit.com/games/votables/csgo/maps/de_train_428x212.jpg',
+                            image_sm: 'https://cdn.faceit.com/games/votables/csgo/maps/de_train_110x55.jpg',
+                            name: 'de_train',
+                        },
+                        {
+                            image_lg: 'https://cdn.faceit.com/games/votables/csgo/maps/de_nuke_428x212.jpg',
+                            image_sm: 'https://cdn.faceit.com/games/votables/csgo/maps/de_nuke_110x55.jpg',
+                            name: 'de_nuke',
+                            class_name: 'de_nuke',
+                            game_map_id: 'de_nuke',
+                            guid: 'de_nuke',
+                        },
+                    ],
+                },
+            },
+            calculate_elo: true,
+            configured_at: 1590619788,
+            started_at: 1590620023,
+            finished_at: 1590622357,
+            demo_url: [
+                'https://demos-europe-west2.faceit-cdn.net/csgo/0e1b55ba-63a3-4ccc-b38f-df3361b5299b.dem.gz',
+            ],
+            chat_room_id: 'match-1-3a9d067c-1225-4191-bf3b-3897e9b53e98',
+            best_of: 1,
+            results: {
+                winner: 'faction1',
+                score: {
+                    faction1: 1,
+                    faction2: 0,
+                },
+            },
+            status: 'FINISHED',
+            faceit_url: 'https://www.faceit.com/{lang}/csgo/room/1-3a9d067c-1225-4191-bf3b-3897e9b53e98',
+        },
+    },
+}
