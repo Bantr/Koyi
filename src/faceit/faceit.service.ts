@@ -176,6 +176,20 @@ export class FaceitService {
       matchType = IMatchType.CSGOFaceItPremium;
     }
 
+    if (
+      faceitMatch.competition_name === 'Mapcore EU - Community Maps' &&
+      faceitMatch.competition_type === 'hub'
+    ) {
+      matchType = IMatchType.HubMapCoreEU;
+    }
+
+    if (
+      faceitMatch.competition_name === 'Mapcore NA - Community Maps' &&
+      faceitMatch.competition_type === 'hub'
+    ) {
+      matchType = IMatchType.HubMapCoreNA;
+    }
+
     return matchType;
   }
 
