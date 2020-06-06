@@ -75,7 +75,9 @@ export class FaceitService {
 
         const cleanedData = await this.transformAPIResponseToMatch(match);
 
-        this.matchService.addMatchToQueue(cleanedData);
+        if (cleanedData) {
+          this.matchService.addMatchToQueue(cleanedData);
+        }
       }
     }
     return;
@@ -140,7 +142,10 @@ export class FaceitService {
       this.logger.error(
         `Unknown Faceit match type - ${faceitMatch.competition_name} ${faceitMatch.competition_type}`
       );
-      throw new Error(`Unknown Faceit match type`);
+      Sentry.captureMessage(
+        `Unknown Faceit match type - ${faceitMatch.competition_name} ${faceitMatch.competition_type}`
+      );
+      return null;
     }
 
     const data: CsgoMatchDto = {
