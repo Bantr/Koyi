@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as Sentry from '@sentry/node';
 import { Job } from 'bull';
 import { CsgoMatchDto } from 'src/match/dto/csgoMatch.dto';
+import { isNull } from 'util';
 
 import { MatchService } from '../match/match.service';
 import { UserRepository } from '../user/user.repository';
@@ -124,27 +125,19 @@ export class FaceitService {
       throw new Error();
     }
 
-    // TODO: refactor this once we learn more on how match types can be identified
-    let matchType: IMatchType;
-    let foundMatch = false;
-
-    if (
-      faceitMatch.competition_name === 'CS:GO 5v5' &&
-      faceitMatch.competition_type === 'matchmaking'
-    ) {
-      matchType = IMatchType.CSGOFaceIt;
-      foundMatch = true;
-    }
+    const matchType = this.determineFaceitMatchType(faceitMatch);
 
     // We have to be careful that we do not mislabel matches.
     // Log unknown match types until we implement them
-    if (!foundMatch) {
+    if (isNull(matchType)) {
       this.logger.error(
-        `Unknown Faceit match type - ${faceitMatch.competition_name} ${faceitMatch.competition_type}`
+        `Unknown Faceit match type - ${faceitMatch.competition_name} - ${faceitMatch.competition_type}`
       );
-      Sentry.captureMessage(
-        `Unknown Faceit match type - ${faceitMatch.competition_name} ${faceitMatch.competition_type}`
-      );
+      Sentry.captureException({
+        message: `Unknown Faceit match type - ${faceitMatch.competition_name} - ${faceitMatch.competition_type}`,
+        faceitMatch
+      });
+
       return null;
     }
 
@@ -164,6 +157,26 @@ export class FaceitService {
    */
   private async getPlayerHistory(id: string) {
     return await this.doRequest(`/players/${id}/history`);
+  }
+
+  private determineFaceitMatchType(faceitMatch) {
+    let matchType: IMatchType = null;
+
+    if (
+      faceitMatch.competition_name === 'CS:GO 5v5' &&
+      faceitMatch.competition_type === 'matchmaking'
+    ) {
+      matchType = IMatchType.CSGOFaceIt;
+    }
+
+    if (
+      faceitMatch.competition_name === 'CS:GO 5v5 PREMIUM' &&
+      faceitMatch.competition_type === 'matchmaking'
+    ) {
+      matchType = IMatchType.CSGOFaceItPremium;
+    }
+
+    return matchType;
   }
 
   /**
