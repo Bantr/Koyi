@@ -88,13 +88,30 @@ export class MatchService {
   async handleMatch(job: Job) {
     const data = job.data as CsgoMatchDto;
 
+    const buffer = await this.downloadDemo(data);
     await job.progress(0.25);
 
-    const buffer = await this.downloadDemo(data);
-
+    const match = await this.handleDemo(buffer, data);
     await job.progress(0.5);
 
-    const match = await this.handleDemo(buffer, data);
+    // Save match to database
+    // TODO: Move this to match repository
+    const queryRunner = this.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await match.save();
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      // since we have errors lets rollback the changes we made
+      await queryRunner.rollbackTransaction();
+      // And throw the error so the job is marked as failed
+      throw err;
+    } finally {
+      // you need to release a queryRunner which was manually instantiated
+      await queryRunner.release();
+    }
 
     await job.progress(0.75);
 
@@ -150,8 +167,10 @@ export class MatchService {
    * @param match
    */
   private async handleDemo(matchBuffer: Buffer, matchData: CsgoMatchDto) {
-    const demo = new Demo(matchBuffer, this.connection);
-    const matchRecord = await this.matchRepository.findMatchByExternalId(matchData.externalId);
+    const demo = new Demo(matchBuffer);
+    const matchRecord = await this.matchRepository.findMatchByExternalId(
+      matchData.externalId
+    );
     return await demo.handle(matchData, matchRecord);
   }
 
@@ -177,7 +196,8 @@ export class MatchService {
   @OnQueueFailed()
   onFailed(job: Job, err: Error) {
     this.logger.error(
-      `Job ${job.id} of type ${job.name} from queue ${job.queue.name} has failed!`, err.stack
+      `Job ${job.id} of type ${job.name} from queue ${job.queue.name} has failed!`,
+      err.stack
     );
     Sentry.captureException(err);
   }
