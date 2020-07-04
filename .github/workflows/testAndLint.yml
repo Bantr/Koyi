@@ -39,6 +39,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+      - run: npm run demos:unzip
       - run: npm test
         env:
           CI: true
