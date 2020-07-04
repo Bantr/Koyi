@@ -65,6 +65,17 @@ describe('Demo handler', () => {
     expect(resultMatch.players).toHaveLength(10);
   });
 
+  it('returns correct basicInfo', async () => {
+    expect(resultMatch).toHaveProperty('durationTicks');
+    expect(resultMatch.durationTicks).toBe(340352);
+
+    expect(resultMatch).toHaveProperty('map');
+    expect(resultMatch.map).toBe('de_dust2');
+
+    expect(resultMatch).toHaveProperty('tickrate');
+    expect(resultMatch.tickrate).toBe(128);
+  });
+
   afterAll(async () => {
     await app.close();
   });
