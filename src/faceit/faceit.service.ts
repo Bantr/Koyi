@@ -7,7 +7,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as Sentry from '@sentry/node';
 import { Job } from 'bull';
 import { CsgoMatchDto } from 'src/match/dto/csgoMatch.dto';
-import { isNull } from 'util';
 
 import { MatchService } from '../match/match.service';
 import { UserRepository } from '../user/user.repository';
@@ -129,22 +128,17 @@ export class FaceitService {
 
     // We have to be careful that we do not mislabel matches.
     // Log unknown match types until we implement them
-    if (isNull(matchType)) {
-      this.logger.error(
+    if (matchType === IMatchType.Other) {
+      this.logger.warn(
         `Unknown Faceit match type - ${faceitMatch.competition_name} - ${faceitMatch.competition_type}`
       );
-      Sentry.captureException({
-        message: `Unknown Faceit match type - ${faceitMatch.competition_name} - ${faceitMatch.competition_type}`,
-        faceitMatch
-      });
-
-      return null;
     }
 
     const data: CsgoMatchDto = {
       id: faceitMatch.match_id,
       externalId: faceitMatch.match_id,
       type: matchType,
+      typeExtended: `${faceitMatch.competition_name} - ${faceitMatch.competition_type}`,
       demoUrl: faceitMatch.demoUrl
     };
 
@@ -188,6 +182,10 @@ export class FaceitService {
       faceitMatch.competition_type === 'hub'
     ) {
       matchType = IMatchType.HubMapCoreNA;
+    }
+
+    if (matchType === null) {
+      matchType = IMatchType.Other;
     }
 
     return matchType;

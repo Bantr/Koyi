@@ -70,6 +70,7 @@ export class MatchService {
     const match = new Match();
     match.externalId = data.externalId;
     match.demoUrl = data.demoUrl;
+    match.typeExtended = data.typeExtended;
     match.date = new Date();
     await this.matchRepository.createMatch(match);
 

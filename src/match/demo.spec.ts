@@ -50,7 +50,8 @@ describe('Demo handler', () => {
         externalId: 'foo',
         id: ' bar',
         type: IMatchType.CSGOFaceIt,
-        demoUrl: 'notneeded'
+        demoUrl: 'notneeded',
+        typeExtended: 'test match'
       },
       initMatch
     );

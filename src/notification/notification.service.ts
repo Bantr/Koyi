@@ -30,6 +30,7 @@ export class NotificationService {
 
     this.bot.on('ready', () => {
       this.logger.log('Discord bot has logged in');
+      // TODO: Figure out why configService.get('BANTR_DISCORD_CLIENTID') is undefined
       this.logger.log(
         `Invite link: https://discordapp.com/oauth2/authorize?client_id=${configService.get(
           'BANTR_DISCORD_CLIENTID'
@@ -43,13 +44,12 @@ export class NotificationService {
     // Get users that track this account
     const users = player.trackedBy;
     try {
-
-      const notPreExistingBan = (bans: Array<Ban>) => bans.some(_ => !_.preExisting);
+      const notPreExistingBan = (bans: Array<Ban>) =>
+        bans.some(_ => !_.preExisting);
 
       if (notPreExistingBan(newBans)) {
         await this.sendToGlobalChannel(options);
       }
-
     } catch (error) {
       this.logger.error(error);
     }

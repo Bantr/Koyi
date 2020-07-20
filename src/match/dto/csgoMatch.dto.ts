@@ -5,26 +5,29 @@ import { IsNotEmpty, IsString, IsUrl, ValidateNested } from 'class-validator';
  * DTO for a CSGO match
  */
 export class CsgoMatchDto {
-    /**
-     * ID gotten from the demo
-     */
-    @IsString()
-    @IsNotEmpty()
-    id: string;
-    /**
-     * Type of match
-     */
-    @ValidateNested()
-    type: IMatchType;
+  /**
+   * ID gotten from the demo
+   */
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+  /**
+   * Type of match
+   */
+  @ValidateNested()
+  type: IMatchType;
 
-    /**
-     * ID gotten from service this match was played on
-     */
-    @IsString()
-    @IsNotEmpty()
-    externalId: string;
+  @IsString()
+  typeExtended: string;
 
-    @IsUrl()
-    @IsNotEmpty()
-    demoUrl: string;
+  /**
+   * ID gotten from service this match was played on
+   */
+  @IsString()
+  @IsNotEmpty()
+  externalId: string;
+
+  @IsUrl()
+  @IsNotEmpty()
+  demoUrl: string;
 }
