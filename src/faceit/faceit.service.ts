@@ -62,6 +62,11 @@ export class FaceitService {
     );
     // TODO: split this into separate queue jobs, to spread load & more accurate retries/failures
     for (const user of updatedUsers) {
+      // If a user has no Faceit profile, we shouldn't try to get new matches for this user
+      if (!user.faceitId) {
+        continue;
+      }
+
       const history = await this.getPlayerHistory(user.faceitId);
 
       this.logger.debug(
@@ -70,7 +75,7 @@ export class FaceitService {
       for (const match of history.data.items) {
         if (match.status !== 'finished') {
           // Match has not finished yet, don't parse data
-          return;
+          continue;
         }
 
         const cleanedData = await this.transformAPIResponseToMatch(match);
@@ -99,11 +104,16 @@ export class FaceitService {
   }
 
   private async updateUserFaceit(user: User) {
-    const response = await this.getFaceitProfileForSteamId(user.steamId);
-    const { player_id: faceitId, nickname } = response.data;
-    user.faceitId = faceitId;
-    user.faceitName = nickname;
-    return await this.userRepository.saveUser(user);
+    try {
+      const response = await this.getFaceitProfileForSteamId(user.steamId);
+      const { player_id: faceitId, nickname } = response.data;
+      user.faceitId = faceitId;
+      user.faceitName = nickname;
+      return await this.userRepository.saveUser(user);
+    } catch (e) {
+      this.logger.error(`Could not update user faceit profile ${user.id}`, e);
+      return user;
+    }
   }
 
   /**
