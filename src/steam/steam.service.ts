@@ -31,7 +31,7 @@ export class SteamService {
      * @param steamIds
      */
     async getUserBans(steamIds: string[]) {
-        // TODO create interface for steamId
+        // TODO: create interface for steamId
         const response = await this.httpService.get(`https://api.steampowered.com/ISteamUser/GetPlayerBans/v1/`, {
             params: {
                 key: this.steamApiKey,
@@ -47,7 +47,7 @@ export class SteamService {
      * @param steamIds
      */
     async getUserProfiles(steamIds: string[]) {
-        // TODO create interface for steamId
+        // TODO: create interface for steamId
         const response = await this.httpService.get(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/`, {
             params: {
                 key: this.steamApiKey,
