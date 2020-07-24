@@ -1,14 +1,23 @@
 import { User } from '@bantr/lib/dist/entities';
-import { OnQueueCompleted, OnQueueError, OnQueueFailed, Process, Processor } from '@nestjs/bull';
+import {
+  OnQueueCompleted,
+  OnQueueError,
+  OnQueueFailed,
+  Process,
+  Processor
+} from '@nestjs/bull';
 import { HttpService, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as Sentry from '@sentry/node';
 import { Job } from 'bull';
 import { LastCheckedType, UserRepository } from 'src/user/user.repository';
+import SteamBot from './SteamBot';
 
 import IGetPlayerBansResponse from './interface/IGetPlayerBansResponse.interface';
-
+import { CsgoMatchDto } from 'src/match/dto/csgoMatch.dto';
+import { IMatchType } from '@bantr/lib/dist/types';
+import { MatchService } from 'src/match/match.service';
 /**
  * Handles actions to do with Steam
  */
@@ -23,6 +32,9 @@ export class SteamService {
    * API key used for authentication with Steam API
    */
   private steamApiKey: string;
+
+  private SteamBot: SteamBot;
+
   /**
    * The service constructor
    * @param httpService
@@ -32,9 +44,14 @@ export class SteamService {
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
     private readonly httpService: HttpService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly matchService: MatchService
   ) {
     this.steamApiKey = configService.get('BANTR_STEAM_API');
+    this.SteamBot = new SteamBot(
+      configService.get('BANTR_STEAM_BOT_USERNAME'),
+      configService.get('BANTR_STEAM_BOT_PASSWORD')
+    );
   }
 
   @Process({ name: '__default__' })
@@ -44,11 +61,23 @@ export class SteamService {
       LastCheckedType.steam
     );
 
-    console.log(users);
-
     for (const user of users) {
-      const apiResponses = await this.getNewMatchesForUser(user);
-      console.log(apiResponses);
+      let apiResponses: Array<string>;
+      try {
+        apiResponses = await this.getNewMatchesForUser(user);
+      } catch (e) {
+        this.logger.error(e);
+        continue;
+      }
+
+      for (const shareCode of apiResponses) {
+        const match = new CsgoMatchDto();
+        match.externalId = shareCode;
+        match.type = IMatchType.CSGOMatchMaking;
+        match.typeExtended = 'Matchmaking 5v5';
+        match.demoUrl = await this.SteamBot.getDemoUrlFromShareCode(shareCode);
+        await this.matchService.addMatchToQueue(match);
+      }
     }
   }
 

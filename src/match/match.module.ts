@@ -1,4 +1,4 @@
-import { HttpModule, Module } from '@nestjs/common';
+import { HttpModule, Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { PlayerModule } from '../player/player.module';
@@ -8,13 +8,13 @@ import { MatchRepository } from './match.repository';
 import { MatchService } from './match.service';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([MatchRepository, UserRepository]),
-        QueueModule,
-        PlayerModule,
-        HttpModule
-    ],
-    providers: [MatchService],
-    exports: [MatchService]
+  imports: [
+    TypeOrmModule.forFeature([MatchRepository, UserRepository]),
+    QueueModule,
+    forwardRef(() => PlayerModule),
+    HttpModule
+  ],
+  providers: [MatchService],
+  exports: [MatchService]
 })
-export class MatchModule { }
+export class MatchModule {}

@@ -60,11 +60,13 @@ dotenv.config();
         BANTR_DISCORD_BOT_TOKEN: Joi.string(),
         BANTR_GLOBAL_NOTIFICATION_DISCORD: Joi.string().default(''),
         BANTR_DEMO_DOWNLOAD_LOCATION: Joi.string().default('tmp/'),
-        BANTR_SENTRY_DSN: Joi.string().default('')
+        BANTR_SENTRY_DSN: Joi.string().default(''),
+        BANTR_STEAM_BOT_USERNAME: Joi.string().default(''),
+        BANTR_STEAM_BOT_PASSWORD: Joi.string().default('')
       })
     })
   ],
   controllers: [AppController],
   providers: [AppService]
 })
-export class AppModule { }
+export class AppModule {}

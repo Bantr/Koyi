@@ -1,4 +1,11 @@
-import { OnQueueCompleted, OnQueueError, OnQueueFailed, OnQueueProgress, Process, Processor } from '@nestjs/bull';
+import {
+  OnQueueCompleted,
+  OnQueueError,
+  OnQueueFailed,
+  OnQueueProgress,
+  Process,
+  Processor
+} from '@nestjs/bull';
 import { HttpService, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -72,6 +79,7 @@ export class MatchService {
     match.demoUrl = data.demoUrl;
     match.typeExtended = data.typeExtended;
     match.date = new Date();
+    match.type = data.type;
     await this.matchRepository.createMatch(match);
 
     this.logger.debug(
