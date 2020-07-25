@@ -10,7 +10,27 @@
   <a href="https//bantr.app"><img src="https://bantr.app/static/assets/bantr-icon.png" align="center" alt="Bantr" width="100"></a>
 </h1>
 
-This app processes data for Bantr. Reading and parsing demo files, getting API responses from Steam & Faceit, ...
+This app processes data for Bantr. Fetching, labeling and parsing demo files, getting API responses from Steam & Faceit, ...
+
+## Installation
+
+```
+# Clone the repo
+git clone https://github.com/Bantr/Koyi.git
+
+# Install dependencies
+npm i
+
+# Make sure you have Redis and Postgres running
+# Create a .env file for your config
+cp .env.example .env
+
+# Fill in config
+nano .env
+
+# Run it
+npm run start:dev
+```
 
 ## Releasing a new version
 
