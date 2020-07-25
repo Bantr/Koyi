@@ -7,7 +7,8 @@ import { NotificationService } from '../notification/notification.service';
 import Player from '../player/player.entity';
 import { PlayerService } from '../player/player.service';
 import { QueueService } from '../queue/queue.service';
-import { EconomyBan, SteamService } from '../steam/steam.service';
+import { EconomyBan } from '../steam/interface/IGetPlayerBansResponse.interface';
+import { SteamService } from '../steam/steam.service';
 import { BanRepository } from './ban.repository';
 import { BanService } from './ban.service';
 

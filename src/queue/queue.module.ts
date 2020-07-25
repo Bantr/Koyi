@@ -24,9 +24,13 @@ const redisOptions = {
     BullModule.registerQueue({
       name: 'bans',
       redis: redisOptions
+    }),
+    BullModule.registerQueue({
+      name: 'steam',
+      redis: redisOptions
     })
   ],
   providers: [QueueService],
   exports: [QueueService]
 })
-export class QueueModule {}
+export class QueueModule { }

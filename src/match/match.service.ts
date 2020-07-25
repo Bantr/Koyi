@@ -1,10 +1,12 @@
 import { OnQueueCompleted, OnQueueError, OnQueueFailed, OnQueueProgress, Process, Processor } from '@nestjs/bull';
-import { HttpService, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, HttpService, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as Sentry from '@sentry/node';
 import { Job, Queue } from 'bull';
+import concat = require('concat-stream');
 import { Connection } from 'typeorm';
+import bz2 = require('unbzip2-stream');
 import { promisify } from 'util';
 import { unzip } from 'zlib';
 
@@ -46,6 +48,7 @@ export class MatchService {
     private userRepository: UserRepository,
     private readonly httpService: HttpService,
     private queueService: QueueService,
+    @Inject(forwardRef(() => PlayerService))
     private playerService: PlayerService,
     private readonly config: ConfigService,
     private connection: Connection
@@ -72,6 +75,7 @@ export class MatchService {
     match.demoUrl = data.demoUrl;
     match.typeExtended = data.typeExtended;
     match.date = new Date();
+    match.type = data.type;
     await this.matchRepository.createMatch(match);
 
     this.logger.debug(
@@ -145,16 +149,54 @@ export class MatchService {
   }
 
   private async downloadDemo(match: CsgoMatchDto): Promise<Buffer> {
+    // Different sources return the data in different ways
+    if (match.demoUrl.endsWith('.dem.gz')) {
+      return await this.handleFaceitDemoDownload(match);
+    }
+
+    if (match.demoUrl.endsWith('.bz2')) {
+      return await this.handleMatchmakingDemoDownload(match);
+    }
+
+    throw new Error(
+      `Unknown file type, not sure how to handle demo... ${match.demoUrl}`
+    );
+  }
+
+  private handleMatchmakingDemoDownload(match: CsgoMatchDto): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      this.httpService
+        .get(match.demoUrl, { responseType: 'stream' })
+        .toPromise()
+        .then(response => {
+          const writer = concat(buffer => {
+            resolve(buffer);
+          });
+          response.data.pipe(bz2()).pipe(writer);
+          writer.on('error', reject);
+        })
+
+        .catch(e => {
+          this.logger.error(e);
+          reject(e);
+        });
+    });
+  }
+
+  private handleFaceitDemoDownload(match: CsgoMatchDto): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       this.httpService
         .get(match.demoUrl, { responseType: 'arraybuffer' })
         .toPromise()
-        .then(async response => {
-          const doUnzip = promisify(unzip);
-
-          doUnzip(response.data).then(buffer => {
-            resolve(buffer as Buffer);
-          });
+        .then(response => {
+          promisify(unzip)(response.data)
+            .then(buffer => {
+              resolve(buffer as Buffer);
+            })
+            .catch(e => {
+              this.logger.error(e);
+              reject(e);
+            });
         })
         .catch(e => {
           this.logger.error(e);

@@ -28,16 +28,21 @@ export class QueueService {
         private readonly matchesQueue: Queue,
         @InjectQueue('bans')
         private readonly bansQueue: Queue,
+        @InjectQueue('steam')
+        private readonly steamQueue: Queue,
         private readonly configService: ConfigService
     ) {
         // Add repeated job for getting user matches
         faceitQueue.add({}, { repeat: { cron: configService.get('BANTR_FACEIT_MATCH_CRON') } });
+        // Add repeated job for getting user matches
+        steamQueue.add({}, { repeat: { cron: configService.get('BANTR_STEAM_MATCH_CRON') } });
         // Add repeated job for checking Players for new bans
         bansQueue.add({}, { repeat: { cron: configService.get('BANTR_STEAM_BANS_CRON') } });
 
         this.queues.set('faceit', faceitQueue);
         this.queues.set('matches', matchesQueue);
         this.queues.set('bans', bansQueue);
+        this.queues.set('steam', steamQueue);
     }
 
     /**

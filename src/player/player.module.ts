@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { SteamModule } from '../steam/steam.module';
@@ -7,9 +7,11 @@ import { PlayerRepository } from './player.repository';
 import { PlayerService } from './player.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Player, PlayerRepository]),
-    SteamModule],
+  imports: [
+    TypeOrmModule.forFeature([Player, PlayerRepository]),
+    forwardRef(() => SteamModule)
+  ],
   providers: [PlayerService],
   exports: [PlayerService]
 })
-export class PlayerModule { }
+export class PlayerModule {}

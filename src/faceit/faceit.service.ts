@@ -11,7 +11,7 @@ import { CsgoMatchDto } from 'src/match/dto/csgoMatch.dto';
 import { MatchService } from '../match/match.service';
 import { UserRepository } from '../user/user.repository';
 
-// TODO: create interfaces for response data from Faceit API (Perhaps these API calls belong in @bantr/lib ...)
+// TODO create interfaces for response data from Faceit API (Perhaps these API calls belong in @bantr/lib ...)
 
 /**
  * Service for Faceit

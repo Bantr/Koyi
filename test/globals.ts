@@ -2,7 +2,7 @@ import { Ban, User, UserSettings } from '@bantr/lib/dist/entities';
 import { Player } from '@bantr/lib/dist/entities/player.entity';
 import * as faker from 'faker';
 
-import { EconomyBan, IGetPlayerBansResponse } from '../src/steam/steam.service';
+import IGetPlayerBansResponse, { EconomyBan } from '../src/steam/interface/IGetPlayerBansResponse.interface';
 
 export function mockUser(options: IMockUserOptions): User {
   const user = new User();
@@ -21,6 +21,9 @@ export function mockUser(options: IMockUserOptions): User {
   user.settings.notificationCommunityEnabled = true;
   user.settings.notificationEconomyEnabled = true;
   user.settings.notificationFaceitEnabled = true;
+  user.settings.lastKnownMatch = 'CSGO-nvYA4-FkWRA-dp8AK-qLFot-7WFuA';
+  user.settings.matchAuthCode = '6CSJ-PZ6D7-8PAL';
+  user.settings.save = jest.fn();
 
   return user;
 }
