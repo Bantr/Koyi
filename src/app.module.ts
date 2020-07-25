@@ -56,7 +56,7 @@ dotenv.config();
         BANTR_STEAM_API: Joi.string().required(),
         BANTR_FACEIT_MATCH_CRON: Joi.string().default('0 */2 * * *'),
         BANTR_STEAM_BANS_CRON: Joi.string().default('0 */2 * * *'),
-        BANTR_STEAM_MATCH_CRON: Joi.string().default('0 */2 * * *'),
+        BANTR_STEAM_MATCH_CRON: Joi.string().default('0 * * * *'),
         BANTR_DISCORD_BOT_TOKEN: Joi.string(),
         BANTR_GLOBAL_NOTIFICATION_DISCORD: Joi.string().default(''),
         BANTR_DEMO_DOWNLOAD_LOCATION: Joi.string().default('tmp/'),

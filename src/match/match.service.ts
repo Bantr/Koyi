@@ -1,5 +1,5 @@
 import { OnQueueCompleted, OnQueueError, OnQueueFailed, OnQueueProgress, Process, Processor } from '@nestjs/bull';
-import { HttpService, Injectable, Logger } from '@nestjs/common';
+import { forwardRef, HttpService, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as Sentry from '@sentry/node';
@@ -48,6 +48,7 @@ export class MatchService {
     private userRepository: UserRepository,
     private readonly httpService: HttpService,
     private queueService: QueueService,
+    @Inject(forwardRef(() => PlayerService))
     private playerService: PlayerService,
     private readonly config: ConfigService,
     private connection: Connection

@@ -1,0 +1,42 @@
+{
+    meta: {
+        createdAt: '2020-07-25T18:54:07.457Z',
+        host: 'https://api.steampowered.com',
+        resHumanReadable: true,
+    },
+    req: {
+        url: '/ICSGOPlayers_730/GetNextMatchSharingCode/v1?steamid=76561198028175941&knowncode=CSGO-DNLpG-iNmqM-i9uMV-F6rwJ-Z9JjC',
+        method: 'GET',
+        headers: {
+            accept: 'application/json, text/plain, */*',
+            'user-agent': 'axios/0.19.2',
+            connection: 'close',
+        },
+        body: '',
+    },
+    res: {
+        status: 200,
+        headers: {
+            'content-type': [
+                'application/json; charset=UTF-8',
+            ],
+            expires: [
+                'Sat, 25 Jul 2020 18:55:07 GMT',
+            ],
+            date: [
+                'Sat, 25 Jul 2020 18:54:07 GMT',
+            ],
+            'content-length': [
+                '70',
+            ],
+            connection: [
+                'close',
+            ],
+        },
+        body: {
+            result: {
+                nextcode: 'CSGO-wkzOw-RzsHo-AXBL7-tLzdR-rvMpP',
+            },
+        },
+    },
+}

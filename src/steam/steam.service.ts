@@ -1,23 +1,18 @@
 import { User } from '@bantr/lib/dist/entities';
-import {
-  OnQueueCompleted,
-  OnQueueError,
-  OnQueueFailed,
-  Process,
-  Processor
-} from '@nestjs/bull';
+import { IMatchType } from '@bantr/lib/dist/types';
+import { OnQueueCompleted, OnQueueError, OnQueueFailed, Process, Processor } from '@nestjs/bull';
 import { HttpService, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as Sentry from '@sentry/node';
 import { Job } from 'bull';
-import { LastCheckedType, UserRepository } from 'src/user/user.repository';
+
+import { CsgoMatchDto } from '../match/dto/csgoMatch.dto';
+import { MatchService } from '../match/match.service';
+import { LastCheckedType, UserRepository } from '../user/user.repository';
+import IGetPlayerBansResponse from './interface/IGetPlayerBansResponse.interface';
 import SteamBot from './SteamBot';
 
-import IGetPlayerBansResponse from './interface/IGetPlayerBansResponse.interface';
-import { CsgoMatchDto } from 'src/match/dto/csgoMatch.dto';
-import { IMatchType } from '@bantr/lib/dist/types';
-import { MatchService } from 'src/match/match.service';
 /**
  * Handles actions to do with Steam
  */
@@ -33,7 +28,7 @@ export class SteamService {
    */
   private steamApiKey: string;
 
-  private SteamBot: SteamBot;
+  SteamBot: SteamBot;
 
   /**
    * The service constructor
@@ -48,28 +43,35 @@ export class SteamService {
     private readonly matchService: MatchService
   ) {
     this.steamApiKey = configService.get('BANTR_STEAM_API');
-    this.SteamBot = new SteamBot(
-      configService.get('BANTR_STEAM_BOT_USERNAME'),
+
+    if (
+      configService.get('BANTR_STEAM_BOT_USERNAME') &&
       configService.get('BANTR_STEAM_BOT_PASSWORD')
-    );
+    ) {
+      this.SteamBot = new SteamBot(
+        configService.get('BANTR_STEAM_BOT_USERNAME'),
+        configService.get('BANTR_STEAM_BOT_PASSWORD')
+      );
+    }
   }
 
   @Process({ name: '__default__' })
   async getMatchesForUsers(): Promise<void> {
+    if (!this.SteamBot) {
+      this.logger.warn(
+        'There are no Steam credentials configured, Steam bot is not active and we cannot get new demos from Steam matchmaking'
+      );
+      return;
+    }
+
     this.logger.log(`Checking for new Matchmaking matches`);
     const users = await this.userRepository.getUsersSortedByLastChecked(
       LastCheckedType.steam
     );
 
     for (const user of users) {
-      let apiResponses: Array<string>;
-      try {
-        apiResponses = await this.getNewMatchesForUser(user);
-      } catch (e) {
-        this.logger.error(e);
-        continue;
-      }
-
+      const apiResponses = await this.getNewMatchesForUser(user);
+      user.settings.save();
       for (const shareCode of apiResponses) {
         const match = new CsgoMatchDto();
         match.externalId = shareCode;
@@ -81,6 +83,10 @@ export class SteamService {
     }
   }
 
+  private getSteamApiUrl() {
+    return 'https://api.steampowered.com';
+  }
+
   /**
    * Get ban status for an array of steam IDs
    * @param steamIds
@@ -88,7 +94,7 @@ export class SteamService {
   async getUserBans(steamIds: string[]) {
     // TODO: create interface for steamId
     const response = await this.httpService
-      .get(`https://api.steampowered.com/ISteamUser/GetPlayerBans/v1/`, {
+      .get(`${this.getSteamApiUrl()}/ISteamUser/GetPlayerBans/v1/`, {
         params: {
           key: this.steamApiKey,
           steamids: steamIds.join(',')
@@ -106,7 +112,7 @@ export class SteamService {
   async getUserProfiles(steamIds: string[]) {
     // TODO: create interface for steamId
     const response = await this.httpService
-      .get(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/`, {
+      .get(`${this.getSteamApiUrl()}/ISteamUser/GetPlayerSummaries/v2/`, {
         params: {
           key: this.steamApiKey,
           steamids: steamIds.join(',')
@@ -125,7 +131,7 @@ export class SteamService {
     );
     const response = await this.httpService
       .get(
-        `https://api.steampowered.com/ICSGOPlayers_730/GetNextMatchSharingCode/v1?`,
+        `${this.getSteamApiUrl()}/ICSGOPlayers_730/GetNextMatchSharingCode/v1?`,
         {
           params: {
             key: this.steamApiKey,

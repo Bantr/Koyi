@@ -4,13 +4,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Queue } from 'bull';
 import Player from 'src/player/player.entity';
-import IGetPlayerBansResponse, {
-  EconomyBan
-} from 'src/steam/interface/IGetPlayerBansResponse.interface';
 
 import { NotificationService } from '../notification/notification.service';
 import { PlayerService } from '../player/player.service';
 import { QueueService } from '../queue/queue.service';
+import IGetPlayerBansResponse, { EconomyBan } from '../steam/interface/IGetPlayerBansResponse.interface';
 import { SteamService } from '../steam/steam.service';
 import Ban from './ban.entity';
 import { BanRepository } from './ban.repository';

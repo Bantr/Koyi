@@ -21,8 +21,8 @@ const talkbackServer = talkback({
   port: 7456,
   path: `${__dirname}/tapes`,
   ignoreHeaders: ['authorization'],
+  silent: true,
   tapeNameGenerator: (tapeNumber, tape) => {
-    // TODO: This might fail on Windows...
     return path.join(`${tape.req.method}`, `-${tape.req.url}`);
   }
 });
@@ -72,7 +72,7 @@ describe('FaceitService', () => {
     userRepository = await module.get<UserRepository>(UserRepository);
     httpService = await module.get<HttpService>(HttpService);
     configService = await module.get<ConfigService>(ConfigService);
-    matchService = await module.get<FaceitService>(FaceitService);
+    matchService = await module.get<MatchService>(MatchService);
 
     // Override the private method and supply it with our proxy server
     service['getFaceItApiUrl'] = () => 'http://localhost:7456';
