@@ -18,8 +18,6 @@ import { CsgoMatchDto } from './dto/csgoMatch.dto';
 import Match from './match.entity';
 import { MatchRepository } from './match.repository';
 
-// import Demo from './demo';
-
 /**
  * Processor for the "matches" Queue
  */
@@ -93,6 +91,15 @@ export class MatchService {
   async handleMatch(job: Job) {
     const data = job.data as CsgoMatchDto;
 
+    if (!data.demoUrl) {
+      // No demo found, so no need to do any demo parsing
+      const match = new Match();
+      const matchEntity = Object.assign(match, data);
+      await matchEntity.save();
+      await job.progress(1);
+      return;
+    }
+
     const buffer = await this.downloadDemo(data);
     await job.progress(0.25);
 
@@ -148,7 +155,7 @@ export class MatchService {
     return match;
   }
 
-  private async downloadDemo(match: CsgoMatchDto): Promise<Buffer> {
+  async downloadDemo(match: CsgoMatchDto): Promise<Buffer> {
     // Different sources return the data in different ways
     if (match.demoUrl.endsWith('.dem.gz')) {
       return await this.handleFaceitDemoDownload(match);
