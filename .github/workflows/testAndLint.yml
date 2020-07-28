@@ -42,6 +42,12 @@ jobs:
       - run: npm run demos:unzip
       # Run DB migration script
       - run: npm explore @bantr/lib -- npm run db:migrate
+        env:
+          PG_USER: postgres
+          PG_PW: postgres
+          PG_DB: bantr
+          PG_HOST: localhost
+          PG_PORT: 5432
       - run: npm test
         env:
           CI: true
