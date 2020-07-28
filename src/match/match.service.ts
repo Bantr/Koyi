@@ -106,27 +106,6 @@ export class MatchService {
     const match = await this.handleDemo(buffer, data);
     await job.progress(0.5);
 
-    // Save match to database
-    // TODO: Move this to match repository
-    const queryRunner = this.connection.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    try {
-      await match.save();
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      // since we have errors lets rollback the changes we made
-      await queryRunner.rollbackTransaction();
-      // And throw the error so the job is marked as failed
-      throw err;
-    } finally {
-      // you need to release a queryRunner which was manually instantiated
-      await queryRunner.release();
-    }
-
-    await job.progress(0.75);
-
     // Update steam profile information
     await this.playerService.updateSteamProfile(match.players);
 

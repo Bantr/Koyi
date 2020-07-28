@@ -18,6 +18,7 @@ export default class BasicInfo extends Detector {
         match.durationTicks = this.demoFile.header.playbackTicks;
         match.map = this.demoFile.header.mapName;
         match.tickrate = this.demoFile.tickRate;
+        match.date = new Date();
         resolve(match);
       });
     });

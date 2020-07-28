@@ -131,7 +131,7 @@ export class FaceitService {
       faceitMatch.demoUrl = await this.getDemo(faceitMatch.match_id);
     } catch (error) {
       this.logger.error(`Error while getting demo url ${faceitMatch.match_id}`);
-      throw new Error();
+      throw new Error(error);
     }
 
     const matchType = this.determineFaceitMatchType(faceitMatch);

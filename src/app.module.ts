@@ -1,3 +1,4 @@
+import { entities } from '@bantr/lib/dist/entities';
 import * as Joi from '@hapi/joi';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -27,7 +28,7 @@ dotenv.config();
       username: process.env.BANTR_PG_USER,
       password: process.env.BANTR_PG_PW,
       database: process.env.BANTR_PG_DB,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      entities: entities,
       synchronize: false
       //logging: true
     }),
