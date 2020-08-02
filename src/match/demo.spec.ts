@@ -40,6 +40,7 @@ describe('Demo handler', () => {
           database: process.env.BANTR_PG_DB,
           entities: entities,
           dropSchema: process.env.CI === 'true' ? true : false,
+          //dropSchema: true,
           synchronize: true
         })
       ]

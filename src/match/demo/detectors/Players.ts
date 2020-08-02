@@ -1,17 +1,12 @@
 import { Match } from '@bantr/lib/dist/entities';
 import { Player } from '@bantr/lib/dist/entities/player.entity';
-import { Logger } from '@nestjs/common';
 import { DemoFile } from 'demofile';
 
 import Detector from './Detector';
 
 export default class Players extends Detector {
-  private logger: Logger;
-  /**
-   *
-   */
-  constructor(demoFile: DemoFile) {
-    super(demoFile);
+  constructor(demoFile: DemoFile, match: Match) {
+    super(demoFile, match);
   }
 
   private steamIdsInMatch: string[] = [];
@@ -21,26 +16,20 @@ export default class Players extends Detector {
     return 'Players';
   }
 
-  calculate(match: Match): Promise<Match> {
-    this.logger = new Logger(`DEMO ${match.externalId}`);
-    return new Promise(resolve => {
-      this.demoFile.gameEvents.on('round_start', async () => {
-        const players = this.demoFile.players;
+  async calculate(): Promise<void> {
+    this.demoFile.gameEvents.on('round_start', async () => {
+      const players = this.demoFile.players;
 
-        for (const demoPlayer of players) {
-          const demoPlayerSteamId = demoPlayer.steam64Id.toString();
-          await this.createPlayer(demoPlayerSteamId);
-          match.players = this.playersInMatch;
-        }
-      });
-
-      this.demoFile.on('end', async () => {
-        match.players = await Promise.all(
-          this.playersInMatch.map(_ => _.save())
-        );
-        resolve(match);
-      });
+      for (const demoPlayer of players) {
+        const demoPlayerSteamId = demoPlayer.steam64Id.toString();
+        await this.createPlayer(demoPlayerSteamId);
+        this.match.players = this.playersInMatch;
+      }
     });
+  }
+
+  async saveData() {
+    await Promise.all(this.playersInMatch.map(_ => _.save()));
   }
 
   async createPlayer(steamId: string) {
@@ -61,7 +50,6 @@ export default class Players extends Detector {
       }
       await player.save();
       this.playersInMatch.push(player);
-      this.logger.log(`Detected player ${steamId} in match`);
       return player;
     }
   }
