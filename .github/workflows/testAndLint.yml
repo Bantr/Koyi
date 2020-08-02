@@ -41,7 +41,7 @@ jobs:
       - run: npm run build
       - run: npm run demos:unzip
       # Run DB migration script
-      - run: npm explore @bantr/lib -- npm run db:migrate
+      - uses: docker://quay.io/bantr/lib:latest
         env:
           PG_USER: postgres
           PG_PW: postgres
