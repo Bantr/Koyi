@@ -21,13 +21,13 @@ export default class Demo {
     match.type = matchData.type;
     this.logger = new Logger(`DEMO ${match.externalId}`);
 
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       this.logger.debug(`Starting processing`);
-      const promises: Promise<Match>[] = [];
+      const promises: Promise<void>[] = [];
 
       for (const detector of Detectors) {
-        const detectorClass = new detector(this.demoFile);
-        promises.push(detectorClass.calculate(match));
+        const detectorClass = new detector(this.demoFile, match);
+        promises.push(detectorClass.run());
       }
 
       this.demoFile.on('end', async () => {
@@ -38,15 +38,7 @@ export default class Demo {
         } catch (e) {
           this.logger.error(`Error while running Detectors`, e);
           Sentry.captureException(e);
-          throw e;
-        }
-
-        try {
-          await match.save();
-        } catch (e) {
-          this.logger.error(`Error while saving match`, e);
-          Sentry.captureException(e);
-          throw e;
+          reject(e);
         }
 
         resolve(match);
