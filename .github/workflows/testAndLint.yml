@@ -40,14 +40,6 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm run demos:unzip
-      # Run DB migration script
-      - uses: docker://quay.io/bantr/lib:latest
-        env:
-          PG_USER: postgres
-          PG_PW: postgres
-          PG_DB: bantr
-          PG_HOST: localhost
-          PG_PORT: 5432
       - run: npm test
         env:
           CI: true

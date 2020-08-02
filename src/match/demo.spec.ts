@@ -38,9 +38,9 @@ describe('Demo handler', () => {
           username: process.env.BANTR_PG_USER,
           password: process.env.BANTR_PG_PW,
           database: process.env.BANTR_PG_DB,
-          entities: entities
+          entities: entities,
           //dropSchema: true
-          //synchronize: true
+          synchronize: true
         })
       ]
     })
