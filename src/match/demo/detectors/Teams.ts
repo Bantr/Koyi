@@ -1,4 +1,4 @@
-import { Match, Player } from '@bantr/lib/dist/entities';
+import { Match } from '@bantr/lib/dist/entities';
 import { Team } from '@bantr/lib/dist/entities/team.entity';
 import { DemoFile } from 'demofile';
 
@@ -43,15 +43,6 @@ export default class Teams extends Detector {
   async saveData() {
     for (const team of this.match.teams) {
       await team.save();
-      this.logger.debug('Setting player -> teams relation');
-      for (const player of team.players) {
-        // TODO refactor this so it doesn't have to load the entire relation
-        const playerRecord = await Player.findOne(player.id, {
-          relations: ['teams']
-        });
-        playerRecord.teams.push(team);
-        await playerRecord.save();
-      }
     }
     await this.match.save();
     return;

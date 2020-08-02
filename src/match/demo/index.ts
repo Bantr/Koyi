@@ -21,7 +21,7 @@ export default class Demo {
     match.type = matchData.type;
     this.logger = new Logger(`DEMO ${match.externalId}`);
 
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       this.logger.debug(`Starting processing`);
       const promises: Promise<void>[] = [];
 
@@ -38,7 +38,7 @@ export default class Demo {
         } catch (e) {
           this.logger.error(`Error while running Detectors`, e);
           Sentry.captureException(e);
-          throw e;
+          reject(e);
         }
 
         resolve(match);
