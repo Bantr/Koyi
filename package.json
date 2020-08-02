@@ -42,7 +42,7 @@
     }
   },
   "dependencies": {
-    "@bantr/lib": "^1.9.12",
+    "@bantr/lib": "^1.11.5",
     "@hapi/joi": "^17.1.1",
     "@nestjs/bull": "^0.1.1",
     "@nestjs/common": "^6.7.2",

@@ -1,3 +1,4 @@
+import { entities } from '@bantr/lib/dist/entities';
 import { IMatchType } from '@bantr/lib/dist/types';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,6 +10,9 @@ import Demo from './demo';
 import Match from './match.entity';
 
 dotenv.config();
+const demoFileBuffer = fs.readFileSync(
+  path.join(__dirname, '../../test/demos/faceit-5v5.dem')
+);
 
 // Database connection is required to run this test!
 
@@ -18,17 +22,14 @@ describe('Demo handler', () => {
   jest.setTimeout(1000 * 60 * 5);
 
   let demoClass: Demo;
-  let demoFileBuffer: Buffer;
+
   let app: TestingModule;
   let resultMatch: Match;
 
-  beforeAll(async () => {
-    demoFileBuffer = fs.readFileSync(
-      path.join(__dirname, '../../test/demos/faceit-5v5.dem')
-    );
+  beforeAll(done => {
     demoClass = new Demo(demoFileBuffer);
 
-    app = await Test.createTestingModule({
+    Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
           type: 'postgres',
@@ -37,24 +38,47 @@ describe('Demo handler', () => {
           username: process.env.BANTR_PG_USER,
           password: process.env.BANTR_PG_PW,
           database: process.env.BANTR_PG_DB,
-          entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+          entities: entities,
+          dropSchema: process.env.CI === 'true' ? true : false,
           synchronize: true
         })
       ]
-    }).compile();
-
-    const initMatch = new Match();
-    initMatch.externalId = 'Testing Demo 5v5 faceit';
-    resultMatch = await demoClass.handle(
-      {
-        externalId: 'foo',
-        id: ' bar',
-        type: IMatchType.CSGOFaceIt,
-        demoUrl: 'notneeded',
-        typeExtended: 'test match'
-      },
-      initMatch
-    );
+    })
+      .compile()
+      .then(newApp => {
+        app = newApp;
+        const initMatch = new Match();
+        initMatch.externalId = 'Testing Demo 5v5 faceit';
+        demoClass
+          .handle(
+            {
+              externalId: 'foo',
+              id: ' bar',
+              type: IMatchType.CSGOFaceIt,
+              demoUrl: 'notneeded',
+              typeExtended: 'test match'
+            },
+            initMatch
+          )
+          .then(match => {
+            Match.findOne(match.id, {
+              relations: [
+                'teams',
+                'players',
+                'teams.players',
+                'teams.matches',
+                'players.teams'
+              ]
+            })
+              .then(res => {
+                resultMatch = res;
+                done();
+              })
+              .catch(done);
+          })
+          .catch(done);
+      })
+      .catch(done);
   });
 
   it('is defined', () => {
@@ -77,7 +101,36 @@ describe('Demo handler', () => {
     expect(resultMatch.tickrate).toBe(128);
   });
 
+  describe('DETECTOR Teams', () => {
+    it('Registers the team in the match', () => {
+      expect(resultMatch).toHaveProperty('teams');
+      expect(resultMatch.teams).toHaveLength(2);
+    });
+
+    it('fills in team info for players', () => {
+      for (const player of resultMatch.players) {
+        expect(player.teams).not.toBe(undefined);
+        expect(player.teams).not.toBe(null);
+        expect(player.teams).toHaveLength(1);
+      }
+    });
+
+    it('returns correct data for teams', async () => {
+      for (const team of resultMatch.teams) {
+        expect(team).toHaveProperty('players');
+        expect(team.players).toHaveLength(5);
+
+        expect(team).toHaveProperty('matches');
+        expect(team.matches).toHaveLength(1);
+
+        expect(team).toHaveProperty('name');
+        expect(team.name.length).toBeGreaterThan(0);
+      }
+    });
+  });
+
   afterAll(async () => {
+    await resultMatch.remove();
     await app.close();
   });
 });

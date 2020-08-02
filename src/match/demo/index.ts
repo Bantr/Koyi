@@ -21,7 +21,7 @@ export default class Demo {
     match.type = matchData.type;
     this.logger = new Logger(`DEMO ${match.externalId}`);
 
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       this.logger.debug(`Starting processing`);
       const promises: Promise<Match>[] = [];
 
@@ -31,19 +31,24 @@ export default class Demo {
       }
 
       this.demoFile.on('end', async () => {
-        try {
-          this.logger.debug(`Demo file has ended, awaiting detectors.`);
+        this.logger.debug(`Demo file has ended, awaiting detectors.`);
 
-          try {
-            await Promise.all(promises);
-          } catch (e) {
-            this.logger.error(`Error while running Detectors`, e);
-            Sentry.captureException(e);
-            throw e;
-          }
-        } catch (error) {
-          return reject(error);
+        try {
+          await Promise.all(promises);
+        } catch (e) {
+          this.logger.error(`Error while running Detectors`, e);
+          Sentry.captureException(e);
+          throw e;
         }
+
+        try {
+          await match.save();
+        } catch (e) {
+          this.logger.error(`Error while saving match`, e);
+          Sentry.captureException(e);
+          throw e;
+        }
+
         resolve(match);
       });
 
