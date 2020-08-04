@@ -1,4 +1,4 @@
-import { entities } from '@bantr/lib/dist/entities';
+import { entities, Team } from '@bantr/lib/dist/entities';
 import { IMatchType } from '@bantr/lib/dist/types';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,6 +10,7 @@ import Demo from './demo';
 import Match from './match.entity';
 
 dotenv.config();
+// https://www.faceit.com/en/csgo/room/1-abde31bd-9e04-4cc4-abe4-8d2467665205/scoreboard
 const demoFileBuffer = fs.readFileSync(
   path.join(__dirname, '../../test/demos/faceit-5v5.dem')
 );
@@ -39,8 +40,8 @@ describe('Demo handler', () => {
           password: process.env.BANTR_PG_PW,
           database: process.env.BANTR_PG_DB,
           entities: entities,
-          dropSchema: process.env.CI === 'true' ? true : false,
-          //dropSchema: true,
+          //dropSchema: process.env.CI === 'true' ? true : false,
+          dropSchema: true,
           synchronize: true
         })
       ]
@@ -68,7 +69,10 @@ describe('Demo handler', () => {
                 'players',
                 'teams.players',
                 'teams.matches',
-                'players.teams'
+                'players.teams',
+                'rounds',
+                'rounds.match',
+                'rounds.winningTeam'
               ]
             })
               .then(res => {
@@ -126,6 +130,25 @@ describe('Demo handler', () => {
 
         expect(team).toHaveProperty('name');
         expect(team.name.length).toBeGreaterThan(0);
+      }
+    });
+  });
+
+  describe('DETECTOR Rounds', () => {
+    it('Registers the rounds in the match', () => {
+      expect(resultMatch).toHaveProperty('rounds');
+      // Knife round is included
+      expect(resultMatch.rounds).toHaveLength(31);
+    });
+
+    it('fills in round info', () => {
+      for (const round of resultMatch.rounds) {
+        expect(round).toBeDefined();
+        expect(round.match.id).toBe(resultMatch.id);
+        expect(round.winReason).toBeDefined();
+
+        expect(round.winningTeam).toBeDefined();
+        expect(round.winningTeam).toBeInstanceOf(Team);
       }
     });
   });

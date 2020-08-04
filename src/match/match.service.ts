@@ -1,5 +1,18 @@
-import { OnQueueCompleted, OnQueueError, OnQueueFailed, OnQueueProgress, Process, Processor } from '@nestjs/bull';
-import { forwardRef, HttpService, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  OnQueueCompleted,
+  OnQueueError,
+  OnQueueFailed,
+  OnQueueProgress,
+  Process,
+  Processor
+} from '@nestjs/bull';
+import {
+  forwardRef,
+  HttpService,
+  Inject,
+  Injectable,
+  Logger
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as Sentry from '@sentry/node';
@@ -103,6 +116,12 @@ export class MatchService {
     const buffer = await this.downloadDemo(data);
     await job.progress(0.25);
 
+    // If buffer is null, the demo was not able to be downloaded and should not be retried
+    // Most services don't keep demos indefinitely, this is how we handle expired demos
+    if (buffer === null) {
+      return {};
+    }
+
     const match = await this.handleDemo(buffer, data);
     await job.progress(0.5);
 
@@ -131,7 +150,7 @@ export class MatchService {
 
     await job.progress(1);
 
-    return match;
+    return {};
   }
 
   async downloadDemo(match: CsgoMatchDto): Promise<Buffer> {
@@ -163,6 +182,9 @@ export class MatchService {
         })
 
         .catch(e => {
+          if (e.message === 'Request failed with status code 404') {
+            resolve(null);
+          }
           this.logger.error(e);
           reject(e);
         });
