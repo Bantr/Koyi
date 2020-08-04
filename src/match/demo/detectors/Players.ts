@@ -8,7 +8,7 @@ export default class Players extends Detector {
   constructor(demoFile: DemoFile, match: Match) {
     super(demoFile, match);
   }
-
+  savePriority = 1000;
   private steamIdsInMatch: string[] = [];
   private playersInMatch: Array<Player> = [];
 

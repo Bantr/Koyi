@@ -4,6 +4,7 @@ import { DemoFile } from 'demofile';
 import Detector from './Detector';
 
 export default class BasicInfo extends Detector {
+  savePriority = 10000;
   constructor(demoFile: DemoFile, match: Match) {
     super(demoFile, match);
   }

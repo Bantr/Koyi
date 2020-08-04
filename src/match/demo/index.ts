@@ -7,11 +7,13 @@ import { Logger } from '@nestjs/common';
 
 import * as Sentry from '@sentry/node';
 import Detectors from './detectors';
+import Detector from './detectors/Detector';
 
 export default class Demo {
   private readonly demoFile: DemoFile = new demofile.DemoFile();
   private readonly fileBuffer: Buffer;
   private logger: Logger;
+  private detectors: Detector[] = [];
 
   constructor(fileBuffer: Buffer) {
     this.fileBuffer = fileBuffer;
@@ -27,6 +29,7 @@ export default class Demo {
 
       for (const detector of Detectors) {
         const detectorClass = new detector(this.demoFile, match);
+        this.detectors.push(detectorClass);
         promises.push(detectorClass.run());
       }
 
@@ -35,10 +38,22 @@ export default class Demo {
 
         try {
           await Promise.all(promises);
-        } catch (e) {
-          this.logger.error(`Error while running Detectors`, e);
-          Sentry.captureException(e);
-          reject(e);
+          const sortedDetectors = this.detectors.sort(
+            (a, b) => a.savePriority - b.savePriority
+          );
+          for (const detector of sortedDetectors) {
+            this.logger.debug(
+              `Saving data for ${detector.getName()} - priority ${
+                detector.savePriority
+              }`
+            );
+            await detector.saveData();
+          }
+        } catch (error) {
+          this.logger.error(`Error while running Detectors`);
+          this.logger.error(error.stack);
+          Sentry.captureException(error);
+          return reject(error);
         }
 
         resolve(match);
