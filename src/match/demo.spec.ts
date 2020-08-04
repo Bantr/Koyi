@@ -145,7 +145,7 @@ describe('Demo handler', () => {
       for (const round of resultMatch.rounds) {
         expect(round).toBeDefined();
         expect(round.match.id).toBe(resultMatch.id);
-        expect(round.winReason).toBeDefined();
+        expect(round.endReason).toBeDefined();
 
         expect(round.winningTeam).toBeDefined();
         expect(round.winningTeam).toBeInstanceOf(Team);

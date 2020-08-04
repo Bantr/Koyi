@@ -32,8 +32,8 @@ export default class Rounds extends Detector {
       }
       this.logger.debug(`Round ${this.rounds.length} ended`);
       this.activeRound.endTick = this.demoFile.currentTick;
-      // TODO Check what values are in e.reason and get correct WinReason enum
-      this.activeRound.winReason = e.reason;
+
+      this.activeRound.endReason = e.reason;
       this.activeRoundWinner = this.demoFile.teams.find(_ => {
         return _.teamNumber === e.winner;
       });
