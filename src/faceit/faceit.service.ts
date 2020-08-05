@@ -10,6 +10,7 @@ import { CsgoMatchDto } from 'src/match/dto/csgoMatch.dto';
 
 import { MatchService } from '../match/match.service';
 import { UserRepository } from '../user/user.repository';
+import { IHubMatches } from './apiResponses/hubMatches.interface';
 
 // TODO create interfaces for response data from Faceit API (Perhaps these API calls belong in @bantr/lib ...)
 
@@ -23,6 +24,8 @@ export class FaceitService {
    * The logger
    */
   private logger = new Logger('FaceitService');
+
+  private watchedHubIds: string[];
   /**
    * API key used for authentication with Faceit API
    */
@@ -42,6 +45,7 @@ export class FaceitService {
     private matchService: MatchService
   ) {
     this.faceitApiKey = config.get('BANTR_FACEIT_API');
+    this.watchedHubIds = config.get('BANTR_WATCHED_FACEIT_HUBS').split(',');
   }
 
   /**
@@ -51,7 +55,39 @@ export class FaceitService {
    * @param job
    */
   @Process({ name: '__default__' })
-  async getMatchesForUsers(): Promise<void> {
+  async faceitProcessor(): Promise<void> {
+    await this.handleNewMatchesUsers();
+    await this.handleHubs();
+  }
+
+  /**
+   * Gets new matches for hubs we are tracking
+   * and adds these matches to processing queue
+   */
+  public async handleHubs() {
+    for (const hubId of this.watchedHubIds) {
+      if (hubId === '') {
+        continue;
+      }
+
+      const hubMatches = await this.getHubMatches(hubId);
+      for (const potentialMatch of hubMatches.items) {
+        if (potentialMatch.status === 'FINISHED') {
+          const match: CsgoMatchDto = {
+            demoUrl: potentialMatch.demo_url[0],
+            externalId: potentialMatch.match_id,
+            id: potentialMatch.match_id,
+            type: IMatchType.Other,
+            typeExtended: `FaceIt hub - ${hubId}`
+          };
+          this.matchService.addMatchToQueue(match);
+        }
+      }
+      this.logger.debug(`Getting matches for hub ${hubId}`);
+    }
+  }
+
+  public async handleNewMatchesUsers() {
     // TODO: Runs for every user now, should select a subset of users to check at a time
     const users = await this.userRepository.getUsers();
 
@@ -85,7 +121,6 @@ export class FaceitService {
         }
       }
     }
-    return;
   }
 
   /**
@@ -238,6 +273,13 @@ export class FaceitService {
     return await this.doRequest(`/matches/${matchId}`);
   }
 
+  private async getHubMatches(hubId: string, limit = 50): Promise<IHubMatches> {
+    const response = await this.doRequest(
+      `/hubs/${hubId}/matches?type=past&offset=0&limit=${limit}`
+    );
+    return response.data;
+  }
+
   private async getDemo(matchId: string): Promise<string> | null {
     const matchDetails = await this.getMatchDetails(matchId);
     if (matchDetails.data) {
@@ -260,12 +302,14 @@ export class FaceitService {
     this.logger.error(
       `Job ${job.id} of type ${job.name} from queue ${job.queue.name} has failed!`
     );
+    this.logger.error(err.stack);
     Sentry.captureException(err);
   }
 
   @OnQueueError()
   onError(err: Error) {
     this.logger.error(`An error occured in a queue!`, err.stack);
+    this.logger.error(err.stack);
     Sentry.captureException(err);
   }
 }

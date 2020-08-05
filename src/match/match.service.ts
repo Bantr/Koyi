@@ -1,18 +1,5 @@
-import {
-  OnQueueCompleted,
-  OnQueueError,
-  OnQueueFailed,
-  OnQueueProgress,
-  Process,
-  Processor
-} from '@nestjs/bull';
-import {
-  forwardRef,
-  HttpService,
-  Inject,
-  Injectable,
-  Logger
-} from '@nestjs/common';
+import { OnQueueCompleted, OnQueueError, OnQueueFailed, OnQueueProgress, Process, Processor } from '@nestjs/bull';
+import { forwardRef, HttpService, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as Sentry from '@sentry/node';
@@ -129,6 +116,7 @@ export class MatchService {
     await this.playerService.updateSteamProfile(match.players);
 
     // Update tracking info
+    // TODO: This should not load the entire tracks relation in memory
     const usersInMatch = await this.userRepository.find({
       where: match.players.map(_ => {
         return {
