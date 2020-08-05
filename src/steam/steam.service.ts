@@ -64,6 +64,13 @@ export class SteamService {
       return;
     }
 
+    if (!this.SteamBot.ready) {
+      this.logger.warn(
+        'Steam bot is not ready. Perhaps this instance is not running a steam bot?'
+      );
+      return;
+    }
+
     this.logger.log(`Checking for new Matchmaking matches`);
     const users = await this.userRepository.getUsersSortedByLastChecked(
       LastCheckedType.steam

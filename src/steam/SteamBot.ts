@@ -1,6 +1,6 @@
-import * as Steam from 'steam';
-import * as csgo from 'csgo';
 import { Logger } from '@nestjs/common';
+import * as csgo from 'csgo';
+import * as Steam from 'steam';
 
 export default class SteamBot {
   private readonly steamClient = new Steam.SteamClient();
@@ -48,6 +48,10 @@ export default class SteamBot {
         this.logger.warn('CSGO Client unready');
         this.ready = false;
       });
+    });
+
+    this.steamClient.on('error', error => {
+      this.logger.debug(error);
     });
   }
 
