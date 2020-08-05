@@ -91,6 +91,25 @@ export class FaceitService {
     }
   }
 
+  @Process({ name: 'faceitHub' })
+  async handleHub(job: Job) {
+    const hubId = job.data.hubId;
+    this.logger.debug(`Getting matches for hub ${hubId}`);
+    const hubMatches = await this.getHubMatches(hubId);
+    for (const potentialMatch of hubMatches.items) {
+      if (potentialMatch.status === 'FINISHED') {
+        const match: CsgoMatchDto = {
+          demoUrl: potentialMatch.demo_url[0],
+          externalId: potentialMatch.match_id,
+          id: potentialMatch.match_id,
+          type: IMatchType.Other,
+          typeExtended: `FaceIt hub - ${hubId}`
+        };
+        this.matchService.addMatchToQueue(match);
+      }
+    }
+  }
+
   /**
    * Gets new matches for hubs we are tracking
    * and adds these matches to processing queue
@@ -100,21 +119,7 @@ export class FaceitService {
       if (hubId === '') {
         continue;
       }
-
-      const hubMatches = await this.getHubMatches(hubId);
-      for (const potentialMatch of hubMatches.items) {
-        if (potentialMatch.status === 'FINISHED') {
-          const match: CsgoMatchDto = {
-            demoUrl: potentialMatch.demo_url[0],
-            externalId: potentialMatch.match_id,
-            id: potentialMatch.match_id,
-            type: IMatchType.Other,
-            typeExtended: `FaceIt hub - ${hubId}`
-          };
-          this.matchService.addMatchToQueue(match);
-        }
-      }
-      this.logger.debug(`Getting matches for hub ${hubId}`);
+      await this.faceitQueue.add('faceitHub', { hubId });
     }
   }
 

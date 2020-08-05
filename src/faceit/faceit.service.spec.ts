@@ -72,6 +72,7 @@ describe('FaceitService', () => {
   });
 
   beforeEach(async () => {
+    mockQueue.add.mockReset();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         FaceitService,
@@ -113,8 +114,15 @@ describe('FaceitService', () => {
 
   describe('handleHubs()', () => {
     it('Adds matches to the queue', async () => {
+      await service.handleHub({
+        data: { hubId: '6f63b115-f45e-42b7-88ef-2a96714cd5e1' }
+      } as Job);
+      expect(matchService.addMatchToQueue).toBeCalledTimes(75);
+    });
+
+    it('Adds hubs to the queue', async () => {
       await service.handleHubs();
-      expect(matchService.addMatchToQueue).toBeCalledTimes(121);
+      expect(mockQueue.add).toBeCalledTimes(2);
     });
   });
 
