@@ -107,6 +107,7 @@ describe('SteamService', () => {
     beforeEach(() => {
       // This is mocked
       service['SteamBot'] = new SteamBot('user', 'password');
+      service['SteamBot'].ready = true;
       mockedUser.settings.lastKnownMatch = 'CSGO-nvYA4-FkWRA-dp8AK-qLFot-7WFuA';
     });
 
