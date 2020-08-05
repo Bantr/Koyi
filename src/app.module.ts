@@ -63,7 +63,8 @@ dotenv.config();
         BANTR_DEMO_DOWNLOAD_LOCATION: Joi.string().default('tmp/'),
         BANTR_SENTRY_DSN: Joi.string().default(''),
         BANTR_STEAM_BOT_USERNAME: Joi.string().default(''),
-        BANTR_STEAM_BOT_PASSWORD: Joi.string().default('')
+        BANTR_STEAM_BOT_PASSWORD: Joi.string().default(''),
+        BANTR_WATCHED_FACEIT_HUBS: Joi.string().default('')
       })
     })
   ],

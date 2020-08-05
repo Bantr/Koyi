@@ -37,7 +37,16 @@ const mockUserRepository = () => ({
 
 const mockHttpService = new HttpService();
 const mockConfigService = () => ({
-  get: jest.fn(() => process.env.BANTR_FACEIT_API)
+  get: jest.fn(val => {
+    switch (val) {
+      case 'BANTR_FACEIT_API':
+        return process.env.BANTR_FACEIT_API;
+      case 'BANTR_WATCHED_FACEIT_HUBS':
+        return '6f63b115-f45e-42b7-88ef-2a96714cd5e1,74624044-158f-446a-ad4f-cbd2e0e89423';
+      default:
+        break;
+    }
+  })
 });
 
 const mockMatchService = () => ({
@@ -82,9 +91,18 @@ describe('FaceitService', () => {
     expect(service).toBeDefined();
   });
 
-  it('Updates user profiles', async () => {
-    await service.getMatchesForUsers();
-    expect(userRepository.saveUser).toBeCalledTimes(1);
+  describe('handleNewMatchesUsers()', () => {
+    it('Updates user profiles', async () => {
+      await service.handleNewMatchesUsers();
+      expect(userRepository.saveUser).toBeCalledTimes(1);
+    });
+  });
+
+  describe('handleHubs()', () => {
+    it('Adds matches to the queue', async () => {
+      await service.handleHubs();
+      expect(matchService.addMatchToQueue).toBeCalledTimes(121);
+    });
   });
 
   afterAll(() => {
