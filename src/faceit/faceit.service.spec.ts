@@ -30,7 +30,7 @@ const talkbackServer = talkback({
 });
 
 const mockUserRepository = () => ({
-  getUsers: jest.fn(() => [
+  getUsersSortedByLastChecked: jest.fn(() => [
     mockUser({ emptyFaceitProfile: true }),
     mockUser({})
   ]),

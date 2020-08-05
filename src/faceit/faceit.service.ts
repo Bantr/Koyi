@@ -10,7 +10,7 @@ import { Job, Queue } from 'bull';
 import { CsgoMatchDto } from '../match/dto/csgoMatch.dto';
 import { MatchService } from '../match/match.service';
 import { QueueService } from '../queue/queue.service';
-import { UserRepository } from '../user/user.repository';
+import { LastCheckedType, UserRepository } from '../user/user.repository';
 import { IHubMatches } from './apiResponses/hubMatches.interface';
 
 // TODO create interfaces for response data from Faceit API (Perhaps these API calls belong in @bantr/lib ...)
@@ -124,8 +124,9 @@ export class FaceitService {
   }
 
   public async handleNewMatchesUsers() {
-    // TODO: Runs for every user now, should select a subset of users to check at a time
-    const users = await this.userRepository.getUsers();
+    const users = await this.userRepository.getUsersSortedByLastChecked(
+      LastCheckedType.faceit
+    );
 
     const updatedUsers = await this.handleUserFaceitUpdate(users);
 
