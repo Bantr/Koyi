@@ -1,11 +1,13 @@
 import { HttpService } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Job } from 'bull';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 
 import { mockUser } from '../../test/globals';
 import { MatchService } from '../match/match.service';
+import { QueueService } from '../queue/queue.service';
 import { UserRepository } from '../user/user.repository';
 import { FaceitService } from './faceit.service';
 
@@ -34,7 +36,10 @@ const mockUserRepository = () => ({
   ]),
   saveUser: jest.fn(() => mockUser({}))
 });
-
+const mockQueue = { add: jest.fn() };
+const mockQueueService = {
+  getQueue: jest.fn(() => mockQueue)
+};
 const mockHttpService = new HttpService();
 const mockConfigService = () => ({
   get: jest.fn(val => {
@@ -72,6 +77,7 @@ describe('FaceitService', () => {
         FaceitService,
         { provide: UserRepository, useFactory: mockUserRepository },
         { provide: HttpService, useValue: mockHttpService },
+        { provide: QueueService, useValue: mockQueueService },
         { provide: ConfigService, useFactory: mockConfigService },
         { provide: MatchService, useFactory: mockMatchService }
       ]
@@ -95,6 +101,13 @@ describe('FaceitService', () => {
     it('Updates user profiles', async () => {
       await service.handleNewMatchesUsers();
       expect(userRepository.saveUser).toBeCalledTimes(1);
+      expect(mockQueue.add).toBeCalledTimes(2);
+    });
+    it('Adds matches to the queue', async () => {
+      await service.processNewMatchesForFaceitUser({
+        data: mockUser({})
+      } as Job);
+      expect(matchService.addMatchToQueue).toBeCalledTimes(11);
     });
   });
 

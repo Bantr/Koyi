@@ -5,10 +5,11 @@ import { HttpService, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as Sentry from '@sentry/node';
-import { Job } from 'bull';
-import { CsgoMatchDto } from 'src/match/dto/csgoMatch.dto';
+import { Job, Queue } from 'bull';
 
+import { CsgoMatchDto } from '../match/dto/csgoMatch.dto';
 import { MatchService } from '../match/match.service';
+import { QueueService } from '../queue/queue.service';
 import { UserRepository } from '../user/user.repository';
 import { IHubMatches } from './apiResponses/hubMatches.interface';
 
@@ -30,6 +31,7 @@ export class FaceitService {
    * API key used for authentication with Faceit API
    */
   private faceitApiKey: string;
+  private faceitQueue: Queue;
   /**
    * Inject dependencies
    * @param userRepository
@@ -40,12 +42,14 @@ export class FaceitService {
   constructor(
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
+    private queueService: QueueService,
     private readonly httpService: HttpService,
     private readonly config: ConfigService,
     private matchService: MatchService
   ) {
     this.faceitApiKey = config.get('BANTR_FACEIT_API');
     this.watchedHubIds = config.get('BANTR_WATCHED_FACEIT_HUBS').split(',');
+    this.faceitQueue = queueService.getQueue('faceit');
   }
 
   /**
@@ -58,6 +62,33 @@ export class FaceitService {
   async faceitProcessor(): Promise<void> {
     await this.handleNewMatchesUsers();
     await this.handleHubs();
+  }
+
+  @Process({ name: 'faceitUser' })
+  async processNewMatchesForFaceitUser(job: Job) {
+    const user = job.data as User;
+    // If a user has no Faceit profile, we shouldn't try to get new matches for this user
+    if (!user.faceitId) {
+      return;
+    }
+
+    const history = await this.getPlayerHistory(user.faceitId);
+
+    this.logger.debug(
+      `Found ${history.data.items.length} matches for user "${user.username}" with FaceIt ID "${user.faceitId}"`
+    );
+    for (const match of history.data.items) {
+      if (match.status !== 'finished') {
+        // Match has not finished yet, don't parse data
+        continue;
+      }
+
+      const cleanedData = await this.transformAPIResponseToMatch(match);
+
+      if (cleanedData) {
+        await this.matchService.addMatchToQueue(cleanedData);
+      }
+    }
   }
 
   /**
@@ -96,30 +127,8 @@ export class FaceitService {
     this.logger.verbose(
       `Found ${updatedUsers.length} Faceit users to check for new matches`
     );
-    // TODO: split this into separate queue jobs, to spread load & more accurate retries/failures
     for (const user of updatedUsers) {
-      // If a user has no Faceit profile, we shouldn't try to get new matches for this user
-      if (!user.faceitId) {
-        continue;
-      }
-
-      const history = await this.getPlayerHistory(user.faceitId);
-
-      this.logger.debug(
-        `Found ${history.data.items.length} matches for user "${user.username}" with FaceIt ID "${user.faceitId}"`
-      );
-      for (const match of history.data.items) {
-        if (match.status !== 'finished') {
-          // Match has not finished yet, don't parse data
-          continue;
-        }
-
-        const cleanedData = await this.transformAPIResponseToMatch(match);
-
-        if (cleanedData) {
-          this.matchService.addMatchToQueue(cleanedData);
-        }
-      }
+      await this.faceitQueue.add('faceitUser', user);
     }
   }
 
