@@ -1,11 +1,13 @@
 import { HttpService } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Job } from 'bull';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 
 import { mockUser } from '../../test/globals';
 import { MatchService } from '../match/match.service';
+import { QueueService } from '../queue/queue.service';
 import { UserRepository } from '../user/user.repository';
 import { FaceitService } from './faceit.service';
 
@@ -28,13 +30,16 @@ const talkbackServer = talkback({
 });
 
 const mockUserRepository = () => ({
-  getUsers: jest.fn(() => [
+  getUsersSortedByLastChecked: jest.fn(() => [
     mockUser({ emptyFaceitProfile: true }),
     mockUser({})
   ]),
   saveUser: jest.fn(() => mockUser({}))
 });
-
+const mockQueue = { add: jest.fn() };
+const mockQueueService = {
+  getQueue: jest.fn(() => mockQueue)
+};
 const mockHttpService = new HttpService();
 const mockConfigService = () => ({
   get: jest.fn(val => {
@@ -67,11 +72,13 @@ describe('FaceitService', () => {
   });
 
   beforeEach(async () => {
+    mockQueue.add.mockReset();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         FaceitService,
         { provide: UserRepository, useFactory: mockUserRepository },
         { provide: HttpService, useValue: mockHttpService },
+        { provide: QueueService, useValue: mockQueueService },
         { provide: ConfigService, useFactory: mockConfigService },
         { provide: MatchService, useFactory: mockMatchService }
       ]
@@ -95,13 +102,27 @@ describe('FaceitService', () => {
     it('Updates user profiles', async () => {
       await service.handleNewMatchesUsers();
       expect(userRepository.saveUser).toBeCalledTimes(1);
+      expect(mockQueue.add).toBeCalledTimes(2);
+    });
+    it('Adds matches to the queue', async () => {
+      await service.processNewMatchesForFaceitUser({
+        data: mockUser({})
+      } as Job);
+      expect(matchService.addMatchToQueue).toBeCalledTimes(11);
     });
   });
 
   describe('handleHubs()', () => {
     it('Adds matches to the queue', async () => {
+      await service.handleHub({
+        data: { hubId: '6f63b115-f45e-42b7-88ef-2a96714cd5e1' }
+      } as Job);
+      expect(matchService.addMatchToQueue).toBeCalledTimes(75);
+    });
+
+    it('Adds hubs to the queue', async () => {
       await service.handleHubs();
-      expect(matchService.addMatchToQueue).toBeCalledTimes(121);
+      expect(mockQueue.add).toBeCalledTimes(2);
     });
   });
 

@@ -45,7 +45,6 @@ export class UserRepository extends Repository<User> {
   async getUsersSortedByLastChecked(type: LastCheckedType, limit = 100) {
     switch (type) {
       case LastCheckedType.faceit:
-        // TODO: Not tested yet ¯\_(ツ)_/¯
         return await this.find({
           order: { lastCheckedAtFaceit: 'ASC' },
           take: limit
