@@ -103,7 +103,7 @@ export class FaceitService {
           externalId: potentialMatch.match_id,
           id: potentialMatch.match_id,
           type: IMatchType.Other,
-          typeExtended: `FaceIt hub - ${hubId}`
+          typeExtended: potentialMatch.competition_name
         };
         this.matchService.addMatchToQueue(match);
       }
