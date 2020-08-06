@@ -122,6 +122,7 @@ describe('SteamService', () => {
       // In the tapes, there's 7 valid matches
       expect(getDemoUrlFromShareCodeSpy).toHaveBeenCalledTimes(7);
       expect(addToQueueSpy).toHaveBeenCalledTimes(7);
+      expect(mockedUser.settings.matchmakingAuthFailed).toBe(false);
     });
 
     it('Does not throw when Steam bot is not running', async () => {
@@ -139,6 +140,16 @@ describe('SteamService', () => {
       expect(mockedUser.settings.lastKnownMatch).toBe(
         'CSGO-wkzOw-RzsHo-AXBL7-tLzdR-rvMpP'
       );
+      expect(mockedUser.settings.matchmakingAuthFailed).toBe(false);
+      expect(mockedUser.settings.save).toHaveBeenCalledTimes(1);
+    });
+
+    it('Sets matchmakingAuthFailed to true if requests fail', async () => {
+      // Invalid lastKnownMatch code
+      mockedUser.settings.lastKnownMatch = 'CSGO-nvYA4-FkWRA-dp8AK-qLFot-7WFVb';
+      await service.getMatchesForUsers();
+
+      expect(mockedUser.settings.matchmakingAuthFailed).toBe(true);
       expect(mockedUser.settings.save).toHaveBeenCalledTimes(1);
     });
   });

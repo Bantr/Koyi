@@ -136,7 +136,7 @@ export class SteamService {
     this.logger.debug(
       `Getting matches for users ${user.id} - Found ${matches.length} already, last known match: ${user.settings.lastKnownMatch}`
     );
-    const response = await this.httpService
+    return this.httpService
       .get(
         `${this.getSteamApiUrl()}/ICSGOPlayers_730/GetNextMatchSharingCode/v1?`,
         {
@@ -148,27 +148,33 @@ export class SteamService {
           }
         }
       )
-      .toPromise();
+      .toPromise()
+      .then(response => {
+        // We got all the new matches for user, we can return.
+        if (response.status === 202) {
+          return matches;
+        }
 
-    // We got all the new matches for user, we can return.
-    if (response.status === 202) {
-      return matches;
-    }
+        user.settings.lastKnownMatch = response.data.result.nextcode;
+        matches.push(response.data.result.nextcode);
+        return this.getNewMatchesForUser(user, matches);
+      })
+      .catch(error => {
+        // Steam rejected the request, something is wrong with the connection settings set by the user
+        if (error.response.status === 412 || error.response.status === 403) {
+          user.settings.matchmakingAuthFailed = true;
+          return [];
+        }
 
-    // Request errored, should not attempt more requests
-    if (response.status !== 200) {
-      // TODO: Properly handle this depending on what error happens
-      this.logger.error(`Failed getting next match for user ${user.id}`);
-      Sentry.captureEvent({
-        user: { id: user.id.toString() },
-        message: `${response.status} - ${JSON.stringify(response.data)}`
+        this.logger.error(`Failed getting next match for user ${user.id}`);
+        Sentry.captureEvent({
+          user: { id: user.id.toString() },
+          message: `${error.response.status} - ${JSON.stringify(
+            error.response.data
+          )}`
+        });
+        return matches;
       });
-      return matches;
-    }
-
-    user.settings.lastKnownMatch = response.data.result.nextcode;
-    matches.push(response.data.result.nextcode);
-    return this.getNewMatchesForUser(user, matches);
   }
 
   @OnQueueCompleted()

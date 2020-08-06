@@ -55,6 +55,7 @@ export class UserRepository extends Repository<User> {
           .leftJoinAndSelect('user.settings', 'settings')
           .where('settings.lastKnownMatch is not null')
           .andWhere('settings.matchAuthCode is not null')
+          .andWhere('settings.matchmakingAuthFailed is not true')
           .orderBy('"user"."lastCheckedAtSteam"')
           .limit(limit)
           .getMany();
