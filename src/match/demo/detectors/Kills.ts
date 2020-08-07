@@ -28,7 +28,7 @@ export default class Kills extends Detector {
 
       // If there is no victim or an attacker
       // The kill data is not correct
-      // Idk why this happens, but it does... sometimes...
+      // TODO: This probably happens during suicide? Not sure, has to be investigated and handled correctly
       if (!victim || !attacker) {
         return;
       }
