@@ -1,0 +1,38 @@
+{
+    meta: {
+        createdAt: '2020-08-06T15:21:32.070Z',
+        host: 'https://api.steampowered.com',
+        resHumanReadable: true,
+    },
+    req: {
+        url: '/ICSGOPlayers_730/GetNextMatchSharingCode/v1?steamid=76561198028175941&knowncode=CSGO-nvYA4-FkWRA-dp8AK-qLFot-7WFVb',
+        method: 'GET',
+        headers: {
+            accept: 'application/json, text/plain, */*',
+            'user-agent': 'axios/0.19.2',
+            connection: 'close',
+        },
+        body: '',
+    },
+    res: {
+        status: 403,
+        headers: {
+            'content-type': [
+                'application/json; charset=UTF-8',
+            ],
+            'content-length': [
+                '4',
+            ],
+            expires: [
+                'Thu, 06 Aug 2020 15:21:32 GMT',
+            ],
+            date: [
+                'Thu, 06 Aug 2020 15:21:32 GMT',
+            ],
+            connection: [
+                'close',
+            ],
+        },
+        body: {},
+    },
+}

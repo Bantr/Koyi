@@ -23,6 +23,7 @@ export function mockUser(options: IMockUserOptions): User {
   user.settings.notificationFaceitEnabled = true;
   user.settings.lastKnownMatch = 'CSGO-nvYA4-FkWRA-dp8AK-qLFot-7WFuA';
   user.settings.matchAuthCode = '6CSJ-PZ6D7-8PAL';
+  user.settings.matchmakingAuthFailed = false;
   user.settings.save = jest.fn();
 
   return user;
