@@ -60,12 +60,9 @@ export default class Kills extends Detector {
   async saveData() {
     for (const round of this.match.rounds) {
       for (const kill of round.kills) {
-        //await kill.attacker.position.save();
         await kill.attacker.save();
-        //await kill.victim.position.save();
         await kill.victim.save();
         if (kill.assister) {
-          //await kill.assister.position.save();
           await kill.assister.save();
         }
         await kill.save();
