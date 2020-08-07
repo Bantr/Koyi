@@ -6,7 +6,6 @@ import Detector from './Detector';
 
 export default class Rounds extends Detector {
   private activeRound: Round;
-  private rounds: Array<Round> = [];
   private activeRoundWinner: DemoTeam;
   savePriority = 3000;
   constructor(demoFile: DemoFile, match: Match) {
@@ -18,11 +17,13 @@ export default class Rounds extends Detector {
   }
 
   async calculate(): Promise<void> {
+    this.match.rounds = [];
     this.demoFile.gameEvents.on('round_start', () => {
-      this.logger.debug(`Round ${this.rounds.length + 1} started`);
+      this.logger.debug(`Round ${this.match.rounds.length + 1} started`);
       this.activeRound = new Round();
-      this.rounds.push(this.activeRound);
+      this.match.rounds.push(this.activeRound);
       this.activeRound.match = this.match;
+      this.activeRound.kills = [];
       this.activeRound.startTick = this.demoFile.currentTick;
     });
 
@@ -30,7 +31,7 @@ export default class Rounds extends Detector {
       if (!this.activeRound) {
         return;
       }
-      this.logger.debug(`Round ${this.rounds.length} ended`);
+      this.logger.debug(`Round ${this.match.rounds.length} ended`);
       this.activeRound.endTick = this.demoFile.currentTick;
 
       this.activeRound.endReason = e.reason;
@@ -47,14 +48,14 @@ export default class Rounds extends Detector {
       if (!this.activeRound) {
         return;
       }
-      this.logger.debug(`Round ${this.rounds.length} officially ended`);
+      this.logger.debug(`Round ${this.match.rounds.length} officially ended`);
 
       this.activeRound.officialEndTick = this.demoFile.currentTick;
     });
   }
 
   async saveData() {
-    for (const round of this.rounds) {
+    for (const round of this.match.rounds) {
       // If a round has no endTick, it never actually ended
       // and we should not try to save it
       if (!round.endTick) {
