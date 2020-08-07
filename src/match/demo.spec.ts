@@ -72,7 +72,10 @@ describe('Demo handler', () => {
                 'players.teams',
                 'rounds',
                 'rounds.match',
-                'rounds.winningTeam'
+                'rounds.winningTeam',
+                'rounds.kills',
+                'rounds.kills.attacker',
+                'rounds.kills.attacker.player'
               ]
             })
               .then(res => {
@@ -150,6 +153,26 @@ describe('Demo handler', () => {
         expect(round.winningTeam).toBeDefined();
         expect(round.winningTeam).toBeInstanceOf(Team);
       }
+    });
+  });
+
+  describe('DETECTOR Kills', () => {
+    it('Detects a correct amount of kills', async () => {
+      const totalKills = resultMatch.rounds.reduce(
+        (prev, cur) => prev + cur.kills.length,
+        0
+      );
+      const cataKills = resultMatch.rounds.reduce((prev, cur) => {
+        return (
+          prev +
+          cur.kills.filter(
+            _ => _.attacker.player.steamId === '76561198028175941'
+          ).length
+        );
+      }, 0);
+
+      expect(totalKills).toBe(213);
+      expect(cataKills).toBe(30); // Damn this Cata guy is so good :O
     });
   });
 

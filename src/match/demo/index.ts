@@ -33,6 +33,10 @@ export default class Demo {
         promises.push(detectorClass.run());
       }
 
+      this.demoFile.on('error', e => {
+        reject(e);
+      });
+
       this.demoFile.on('end', async () => {
         this.logger.debug(`Demo file has ended, awaiting detectors.`);
 

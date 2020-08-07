@@ -17,6 +17,7 @@ export default class Players extends Detector {
   }
 
   async calculate(): Promise<void> {
+    this.match.players = [];
     this.demoFile.gameEvents.on('round_start', async () => {
       const players = this.demoFile.players;
 
