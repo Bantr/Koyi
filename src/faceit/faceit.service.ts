@@ -11,9 +11,10 @@ import { CsgoMatchDto } from '../match/dto/csgoMatch.dto';
 import { MatchService } from '../match/match.service';
 import { QueueService } from '../queue/queue.service';
 import { LastCheckedType, UserRepository } from '../user/user.repository';
+import { IFaceitSearchForSteamId } from './apiResponses/faceitSearchSteam.interface';
 import { IHubMatches } from './apiResponses/hubMatches.interface';
-
-// TODO create interfaces for response data from Faceit API (Perhaps these API calls belong in @bantr/lib ...)
+import { IMatchDetails } from './apiResponses/matchDetails.interface';
+import { IPlayerHistory } from './apiResponses/playerHistory.interface';
 
 /**
  * Service for Faceit
@@ -75,9 +76,9 @@ export class FaceitService {
     const history = await this.getPlayerHistory(user.faceitId);
 
     this.logger.debug(
-      `Found ${history.data.items.length} matches for user "${user.username}" with FaceIt ID "${user.faceitId}"`
+      `Found ${history.items.length} matches for user "${user.username}" with FaceIt ID "${user.faceitId}"`
     );
-    for (const match of history.data.items) {
+    for (const match of history.items) {
       if (match.status !== 'finished') {
         // Match has not finished yet, don't parse data
         continue;
@@ -156,7 +157,7 @@ export class FaceitService {
   private async updateUserFaceit(user: User) {
     try {
       const response = await this.getFaceitProfileForSteamId(user.steamId);
-      const { player_id: faceitId, nickname } = response.data;
+      const { player_id: faceitId, nickname } = response;
       user.faceitId = faceitId;
       user.faceitName = nickname;
       return await this.userRepository.saveUser(user);
@@ -170,8 +171,13 @@ export class FaceitService {
    * Tries to find a Faceit profile based on steam ID
    * @param steamId STEAM64 ID
    */
-  private async getFaceitProfileForSteamId(steamId: string): Promise<any> {
-    return await this.doRequest(`/players?game=csgo&game_player_id=${steamId}`);
+  private async getFaceitProfileForSteamId(
+    steamId: string
+  ): Promise<IFaceitSearchForSteamId> {
+    const response = await this.doRequest(
+      `/players?game=csgo&game_player_id=${steamId}`
+    );
+    return response.data;
   }
 
   private async transformAPIResponseToMatch(
@@ -209,8 +215,9 @@ export class FaceitService {
    * Get the matches for a player in the last month
    * @param id
    */
-  private async getPlayerHistory(id: string) {
-    return await this.doRequest(`/players/${id}/history`);
+  private async getPlayerHistory(id: string): Promise<IPlayerHistory> {
+    const response = await this.doRequest(`/players/${id}/history`);
+    return response.data;
   }
 
   private determineFaceitMatchType(faceitMatch) {
@@ -262,7 +269,6 @@ export class FaceitService {
     return 'https://open.faceit.com/data/v4';
   }
 
-  // TODO: Create a proper interface for this API response
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async doRequest(endpoint: string): Promise<any> {
     try {
@@ -284,8 +290,9 @@ export class FaceitService {
     }
   }
 
-  private async getMatchDetails(matchId: string) {
-    return await this.doRequest(`/matches/${matchId}`);
+  private async getMatchDetails(matchId: string): Promise<IMatchDetails> {
+    const response = await this.doRequest(`/matches/${matchId}`);
+    return response.data;
   }
 
   private async getHubMatches(hubId: string, limit = 50): Promise<IHubMatches> {
@@ -297,9 +304,9 @@ export class FaceitService {
 
   private async getDemo(matchId: string): Promise<string> | null {
     const matchDetails = await this.getMatchDetails(matchId);
-    if (matchDetails.data) {
-      if (matchDetails.data.demo_url) {
-        return matchDetails.data.demo_url[0];
+    if (matchDetails) {
+      if (matchDetails.demo_url) {
+        return matchDetails.demo_url[0];
       }
     }
     return null;
