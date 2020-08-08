@@ -96,6 +96,8 @@ function translateDemoWeaponToEnum(weapon: Weapon): WeaponEnum {
       return WeaponEnum.XM1014;
     case 'weapon_revolver':
       return WeaponEnum.R8Revolver;
+    case 'weapon_bizon':
+      return WeaponEnum.PPBizon;
     default:
       if (weapon.className.includes('weapon_knife')) {
         return WeaponEnum.Knife;
