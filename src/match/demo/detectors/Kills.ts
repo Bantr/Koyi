@@ -34,7 +34,7 @@ export default class Kills extends Detector {
       }
 
       this.logger.debug(
-        `${attacker.name} killed ${victim.name} on tick ${this.demoFile.currentTick}`
+        `${attacker.name} (${attacker.steam64Id}) killed ${victim.name} (${victim.steam64Id}) on tick ${this.demoFile.currentTick}`
       );
       const killRecord = new Kill();
 
