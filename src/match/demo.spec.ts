@@ -144,8 +144,8 @@ describe('Demo handler', () => {
         _ => _.winningTeam.id === resultMatch.teams[1].id
       ).length;
 
-      expect(team1wins).toBe(14);
-      expect(team2wins).toBe(16);
+      expect(team1wins).toBe(17);
+      expect(team2wins).toBe(14);
     });
   });
 
