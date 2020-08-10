@@ -7,6 +7,9 @@ import Detector from './Detector';
 export default class Rounds extends Detector {
   private activeRound: Round;
   private activeRoundWinner: DemoTeam;
+
+  // At halftime, teams switch. This variable is used to keep track of that
+  private invertTeams = false;
   savePriority = 3000;
   constructor(demoFile: DemoFile, match: Match) {
     super(demoFile, match);
@@ -52,6 +55,11 @@ export default class Rounds extends Detector {
 
       this.activeRound.officialEndTick = this.demoFile.currentTick;
     });
+
+    this.demoFile.gameEvents.on('round_announce_last_round_half', () => {
+      this.logger.debug(`Half time! Switching teams`);
+      this.invertTeams = !this.invertTeams;
+    });
   }
 
   async saveData() {
@@ -85,6 +93,10 @@ export default class Rounds extends Detector {
   }
 
   private findMatchingTeam(demoTeam: DemoTeam, matchTeams: Team[]) {
-    return matchTeams.find(team => team.handle === demoTeam.handle);
+    if (this.invertTeams) {
+      return matchTeams.find(team => team.handle !== demoTeam.handle);
+    } else {
+      return matchTeams.find(team => team.handle === demoTeam.handle);
+    }
   }
 }

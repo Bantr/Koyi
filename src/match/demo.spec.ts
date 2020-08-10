@@ -135,6 +135,18 @@ describe('Demo handler', () => {
         expect(team.name.length).toBeGreaterThan(0);
       }
     });
+
+    it('Detects correct round wins per team', async () => {
+      const team1wins = resultMatch.rounds.filter(
+        _ => _.winningTeam.id === resultMatch.teams[0].id
+      ).length;
+      const team2wins = resultMatch.rounds.filter(
+        _ => _.winningTeam.id === resultMatch.teams[1].id
+      ).length;
+
+      expect(team1wins).toBe(17);
+      expect(team2wins).toBe(14);
+    });
   });
 
   describe('DETECTOR Rounds', () => {
@@ -170,9 +182,18 @@ describe('Demo handler', () => {
           ).length
         );
       }, 0);
+      const emielKills = resultMatch.rounds.reduce((prev, cur) => {
+        return (
+          prev +
+          cur.kills.filter(
+            _ => _.attacker.player.steamId === '76561198035925898'
+          ).length
+        );
+      }, 0);
 
       expect(totalKills).toBe(213);
       expect(cataKills).toBe(30); // Damn this Cata guy is so good :O
+      expect(emielKills).toBe(19); // What a noooooob
     });
   });
 
