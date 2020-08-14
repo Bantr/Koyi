@@ -1,4 +1,4 @@
-import { entities, Team } from '@bantr/lib/dist/entities';
+import { entities, Position, Team } from '@bantr/lib/dist/entities';
 import { IMatchType } from '@bantr/lib/dist/types';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,6 +10,12 @@ import Demo from './demo';
 import Match from './match.entity';
 
 dotenv.config();
+
+const isPostionAllZero = (pos: Position) =>
+  parseInt(pos.x, 10) === 0 &&
+  parseInt(pos.y, 10) === 0 &&
+  parseInt(pos.z, 10) === 0;
+
 // https://www.faceit.com/en/csgo/room/1-abde31bd-9e04-4cc4-abe4-8d2467665205/scoreboard
 const demoFileBuffer = fs.readFileSync(
   path.join(__dirname, '../../test/demos/faceit-5v5.dem')
@@ -75,7 +81,9 @@ describe('Demo handler', () => {
                 'rounds.winningTeam',
                 'rounds.kills',
                 'rounds.kills.attacker',
-                'rounds.kills.attacker.player'
+                'rounds.kills.attacker.player',
+                'rounds.bombStatusChanges',
+                'rounds.bombStatusChanges.position'
               ]
             })
               .then(res => {
@@ -144,8 +152,11 @@ describe('Demo handler', () => {
         _ => _.winningTeam.id === resultMatch.teams[1].id
       ).length;
 
-      expect(team1wins).toBe(17);
-      expect(team2wins).toBe(14);
+      // Teams can get switched around sometimes...
+      expect(team1wins === 14 || team1wins === 17).toBe(true);
+      expect(team2wins === 14 || team2wins === 17).toBe(true);
+      // Make sure teams either have 14 or 17 wins
+      expect(team1wins + team2wins).toBe(31);
     });
   });
 
@@ -194,6 +205,22 @@ describe('Demo handler', () => {
       expect(totalKills).toBe(213);
       expect(cataKills).toBe(30); // Damn this Cata guy is so good :O
       expect(emielKills).toBe(19); // What a noooooob
+    });
+  });
+
+  describe('DETECTOR BombStatus', () => {
+    it('Registers the BombStatus changes in the match', () => {
+      for (const round of resultMatch.rounds) {
+        expect(round).toHaveProperty('bombStatusChanges');
+        for (const statusChange of round.bombStatusChanges) {
+          expect(statusChange).toHaveProperty('position');
+          expect(statusChange.position).not.toBeNull();
+
+          expect(isPostionAllZero(statusChange.position)).toBeFalsy();
+          expect(statusChange.player).not.toBeNull();
+          expect(statusChange.tick).not.toBe(0);
+        }
+      }
     });
   });
 
