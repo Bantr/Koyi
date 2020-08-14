@@ -26,7 +26,9 @@ export default class Rounds extends Detector {
       this.activeRound = new Round();
       this.match.rounds.push(this.activeRound);
       this.activeRound.match = this.match;
+      // TODO: Can these be automatically initialized in the entity constructor?
       this.activeRound.kills = [];
+      this.activeRound.bombStatusChanges = [];
       this.activeRound.startTick = this.demoFile.currentTick;
     });
 
