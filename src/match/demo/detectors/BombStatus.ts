@@ -18,10 +18,17 @@ export default class BombStatus extends Detector {
 
   private createBombPosition() {
     const position = new Position();
-    if (!this.bomb) {
-      return null;
+    let x, y, z;
+    if (this.bomb) {
+      ({ x, y, z } = this.bomb.position);
+    } else {
+      // If the bomb exploded, there is no entity anymore to get the position of
+      // We find the postion of the bombPlanted event and use that instead
+      ({ x, y, z } = this.currentRound.bombStatusChanges.find(
+        _ => _.type === BombStatusChange.Planted
+      ).position);
     }
-    const { x, y, z } = this.bomb.position;
+
     position.x = x.toString();
     position.y = y.toString();
     position.z = z.toString();
