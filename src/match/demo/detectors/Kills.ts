@@ -22,9 +22,9 @@ export default class Kills extends Detector {
         return;
       }
 
-      const attacker = this.demoFile.entities.getByUserId(e.attacker);
-      const victim = this.demoFile.entities.getByUserId(e.userid);
-      const assister = this.demoFile.entities.getByUserId(e.assister);
+      const attacker = this.getPlayerFromId(e.attacker);
+      const victim = this.getPlayerFromId(e.userid);
+      const assister = this.getPlayerFromId(e.assister);
 
       // If there is no victim or an attacker
       // The kill data is not correct
@@ -38,7 +38,7 @@ export default class Kills extends Detector {
       );
       const killRecord = new Kill();
 
-      killRecord.tick = this.demoFile.currentTick;
+      killRecord.tick = this.currentTick;
       killRecord.throughSmoke = e.thrusmoke;
       killRecord.throughWall = !!e.penetrated;
       killRecord.whileBlind = e.attackerblind;
@@ -53,7 +53,7 @@ export default class Kills extends Detector {
         killRecord.assister.player = this.findMatchingPlayer(assister);
       }
 
-      this.match.rounds[this.match.rounds.length - 1].kills.push(killRecord);
+      this.currentRound.kills.push(killRecord);
     });
   }
 

@@ -19,6 +19,18 @@ export default abstract class Detector {
     this.logger = new Logger(`DEMO [${match.externalId}][${this.getName()}]`);
   }
 
+  protected get currentTick() {
+    return this.demoFile.currentTick;
+  }
+
+  protected getPlayerFromId(id) {
+    return this.demoFile.entities.getByUserId(id);
+  }
+
+  protected get currentRound() {
+    return this.match.rounds[this.match.rounds.length - 1];
+  }
+
   public abstract getName(): string;
 
   /**
