@@ -16,7 +16,7 @@ export default abstract class Detector {
   constructor(demoFile: DemoFile, match: Match) {
     this.demoFile = demoFile;
     this.match = match;
-    this.logger = new Logger(`DEMO [${match.externalId}][${this.getName()}]`);
+    this.logger = new Logger(`DEMO [${match.externalId} ${this.getName()}]`);
   }
 
   protected get currentTick() {
@@ -29,6 +29,12 @@ export default abstract class Detector {
 
   protected get currentRound() {
     return this.match.rounds[this.match.rounds.length - 1];
+  }
+
+  protected get bomb() {
+    return this.demoFile.entities.weapons.find(
+      _ => _.className === 'weapon_c4'
+    );
   }
 
   public abstract getName(): string;
