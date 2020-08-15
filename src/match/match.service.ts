@@ -238,7 +238,7 @@ export class MatchService {
       `Job ${job.id} of type ${job.name} from queue ${job.queue.name} has failed!`,
       err.stack
     );
-    Sentry.captureException(err);
+    Sentry.captureException(err, { extra: { job } });
   }
 
   /**
