@@ -1,5 +1,6 @@
 import { entities, Position, Team } from '@bantr/lib/dist/entities';
 import { IMatchType } from '@bantr/lib/dist/types';
+import { RoundType } from '@bantr/lib/dist/types/RoundType.enum';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
@@ -177,6 +178,18 @@ describe('Demo handler', () => {
         expect(round.winningTeam).toBeInstanceOf(Team);
       }
     });
+
+    it('Registers the first round as knife round', () => {
+      const roundsSortedOnTick = resultMatch.rounds.sort(
+        (a, b) => a.startTick - b.startTick
+      );
+      expect(roundsSortedOnTick[0].type).toBe(RoundType.Knife);
+      // Remove the first element, the knife round
+      roundsSortedOnTick.splice(0, 1);
+      roundsSortedOnTick.forEach(_ => {
+        expect(_.type).toBe(RoundType.Normal);
+      });
+    });
   });
 
   describe('DETECTOR Kills', () => {
@@ -202,9 +215,9 @@ describe('Demo handler', () => {
         );
       }, 0);
 
-      expect(totalKills).toBe(213);
-      expect(cataKills).toBe(30); // Damn this Cata guy is so good :O
-      expect(emielKills).toBe(19); // What a noooooob
+      expect(totalKills).toBe(207);
+      expect(cataKills).toBe(29); // Damn this Cata guy is so good :O
+      expect(emielKills).toBe(18); // What a noooooob
     });
   });
 
