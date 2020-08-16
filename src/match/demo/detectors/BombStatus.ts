@@ -66,7 +66,10 @@ export default class BombStatus extends Detector {
     const bombStatus = new BombStatusEntity();
     bombStatus.type = type;
     bombStatus.tick = this.currentTick;
-    bombStatus.player = createPlayerInfo(this.demoFile, player);
+    if (player) {
+      bombStatus.player = createPlayerInfo(this.demoFile, player);
+    }
+
     bombStatus.position = this.createBombPosition(type, player);
     this.currentRound.bombStatusChanges.push(bombStatus);
   }
@@ -135,7 +138,10 @@ export default class BombStatus extends Detector {
         if (statusChange.position) {
           await statusChange.position.save();
         }
-        await statusChange.player.save();
+        if (statusChange.player) {
+          await statusChange.player.save();
+        }
+
         await statusChange.save();
       }
     }
