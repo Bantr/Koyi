@@ -1,8 +1,9 @@
 import { IBanType } from '@bantr/lib/dist/types';
-import { Process, Processor } from '@nestjs/bull';
+import { OnQueueCompleted, OnQueueError, OnQueueFailed, Process, Processor } from '@nestjs/bull';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Queue } from 'bull';
+import * as Sentry from '@sentry/node';
+import { Job, Queue } from 'bull';
 import Player from 'src/player/player.entity';
 
 import { NotificationService } from '../notification/notification.service';
@@ -271,5 +272,28 @@ export class BanService {
       newBans,
       player: updatedPlayer
     };
+  }
+
+  @OnQueueCompleted()
+  onCompleted(job: Job) {
+    this.logger.debug(
+      `Completed job ${job.id} of type ${job.name} from queue ${job.queue.name}`
+    );
+  }
+
+  @OnQueueFailed()
+  onFailed(job: Job, err: Error) {
+    this.logger.error(
+      `Job ${job.id} of type ${job.name} from queue ${job.queue.name} has failed!`
+    );
+    this.logger.error(err.stack);
+    Sentry.captureException(err);
+  }
+
+  @OnQueueError()
+  onError(err: Error) {
+    this.logger.error(`An error occured in a queue!`, err.stack);
+    this.logger.error(err.stack);
+    Sentry.captureException(err);
   }
 }
