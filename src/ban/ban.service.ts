@@ -52,7 +52,11 @@ export class BanService {
   @Process({ name: '__default__' })
   private async getProfilesForPlayers() {
     const players = await this.playerService.findPlayersToCheckForBans();
-    this.logger.debug(`Found ${players.length} players to check for new bans`);
+    this.logger.debug(
+      `Found ${players.length} players to check for new bans - from ${
+        players[0].lastCheckedAt
+      } to ${players[players.length - 1].lastCheckedAt}`
+    );
     const steamIds = players.map(t => t.steamId);
 
     // Get Steam bans
