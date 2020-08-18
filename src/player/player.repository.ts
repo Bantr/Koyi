@@ -7,24 +7,22 @@ import Player from './player.entity';
  */
 @EntityRepository(Player)
 export class PlayerRepository extends Repository<Player> {
-
-    /**
-     * Returns an array of Players sorted by lastCheckedAt
-     * @param limit
-     */
-    async findPlayerByLastCheckedAt(limit = 100): Promise<Player[]> {
-
-        if (limit > 500) {
-            throw new Error('Max limit of Players requested');
-        }
-
-        const response = await this.find({
-            order: {
-                lastCheckedAt: 'ASC'
-            },
-            take: limit
-        });
-
-        return response;
+  /**
+   * Returns an array of Players sorted by lastCheckedAt
+   * @param limit
+   */
+  async findPlayerByLastCheckedAt(limit = 100): Promise<Player[]> {
+    if (limit > 100) {
+      limit = 100;
     }
+
+    const response = await Player.find({
+      order: {
+        lastCheckedAt: 'ASC'
+      },
+      take: limit
+    });
+
+    return response;
+  }
 }
