@@ -1,12 +1,11 @@
-import { entities, Position, Team } from '@bantr/lib/dist/entities';
+import { Position, Team } from '@bantr/lib/dist/entities';
 import { IMatchType } from '@bantr/lib/dist/types';
 import { RoundType } from '@bantr/lib/dist/types/RoundType.enum';
-import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import getDb from '../../test/getDb';
 import Demo from './demo';
 import Match from './match.entity';
 
@@ -31,31 +30,13 @@ describe('Demo handler', () => {
 
   let demoClass: Demo;
 
-  let app: TestingModule;
   let resultMatch: Match;
 
   beforeAll(done => {
     demoClass = new Demo(demoFileBuffer);
 
-    Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          host: process.env.BANTR_PG_HOST,
-          port: parseInt(process.env.BANTR_PG_PORT, 10),
-          username: process.env.BANTR_PG_USER,
-          password: process.env.BANTR_PG_PW,
-          database: process.env.BANTR_PG_DB,
-          entities: entities,
-          //dropSchema: process.env.CI === 'true' ? true : false,
-          dropSchema: true,
-          synchronize: true
-        })
-      ]
-    })
-      .compile()
-      .then(newApp => {
-        app = newApp;
+    getDb()
+      .then(() => {
         const initMatch = new Match();
         initMatch.externalId = 'Testing Demo 5v5 faceit';
         demoClass
@@ -239,6 +220,5 @@ describe('Demo handler', () => {
 
   afterAll(async () => {
     await resultMatch.remove();
-    await app.close();
   });
 });
