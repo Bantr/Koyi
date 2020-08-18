@@ -84,7 +84,7 @@ export class BanService {
         // Blocked by https://github.com/nestjsx/@nestjs/bull/pull/166
         await this.processProfile(player, banStatusForUser);
       } else {
-        return this.logger.warn(
+        this.logger.warn(
           `Did not find banStatus for ${JSON.stringify(player)}`
         );
       }
@@ -260,7 +260,7 @@ export class BanService {
     const updatedPlayer = await this.playerService.updateLastCheckedAt(player);
 
     if (newBans.length) {
-      this.notificationService.sendNotification({
+      await this.notificationService.sendNotification({
         player: updatedPlayer,
         newBans,
         deletedBans
