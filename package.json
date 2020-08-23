@@ -50,7 +50,7 @@
     "@nestjs/core": "^6.7.2",
     "@nestjs/platform-express": "^6.7.2",
     "@nestjs/typeorm": "^7.0.0",
-    "@sentry/node": "^5.15.5",
+    "@sentry/node": "^5.21.3",
     "@types/concat-stream": "^1.6.0",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
