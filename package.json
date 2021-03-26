@@ -73,7 +73,7 @@
     "unbzip2-stream": "^1.4.3"
   },
   "devDependencies": {
-    "@nestjs/cli": "^6.9.0",
+    "@nestjs/cli": "^7.6.0",
     "@nestjs/schematics": "^7.0.1",
     "@nestjs/testing": "^6.7.1",
     "@types/bull": "^3.12.2",
